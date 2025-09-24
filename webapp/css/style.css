@@ -1,0 +1,90 @@
+/* Notifications */
+.notificationsPopover {
+	width: 27rem;
+	max-height: 40rem;
+}
+
+.notificationsPopover::part(header) {
+	padding: 0;
+	box-shadow: none;
+}
+
+.notificationsPopover::part(content) {
+	padding: 0;
+}
+
+.notificationsPopoverList {
+	height: 100%;
+}
+
+.notificationsPopoverBar,
+.notificationsPopoverBar::part(bar) {
+	box-shadow: none;
+}
+
+/* End notifications */
+
+/* AI Acknowledgements  Dialog*/
+
+.acknowledgementDialog::part(footer) {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	gap: 0.25rem;
+	padding: 0.25rem;
+}
+
+/* End AI Acknowledgements Dialog */
+
+/* AI Card */
+.sapUiAIIntegrationCard {
+	width: 600px;
+}
+
+.sapUiAIIntegrationCardButton {
+	align-self: flex-end;
+}
+
+.sapUIAIIntegratinCardTextArea {
+	height: 350px;
+}
+
+.sapUiAIIntegrationTokenText {
+	width: fit-content;
+	margin-block-end: 1rem;
+}
+
+.sapUiAIIntegrationTokenContainer {
+	display: flex;
+	gap: 0.125rem;
+}
+
+.quickPromptSection {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	padding: 1rem;
+	border-start-start-radius: 0.625rem;
+	border-start-end-radius: 0.625rem;
+	gap: 0.5rem;
+}
+
+.quickPromptAiButton {
+	align-self: flex-end;
+}
+
+.quickPromptLblBtn {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.quickPromptCardFooter {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	gap: 0.25rem;
+	padding: 0 0.75rem 0.75rem 0.75rem;
+}
+/* End AI Card */

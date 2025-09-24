@@ -1,0 +1,110 @@
+<mvc:View
+	controllerName="ai.integration.controller.App"
+	displayBlock="true"
+	xmlns="sap.m"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:core="sap.ui.core"
+	xmlns:tnt="sap.tnt"
+	xmlns:l="sap.ui.layout"
+	xmlns:webcai="@ui5/webcomponents-ai/dist"
+	xmlns:webc="@ui5/webcomponents/dist"
+	xmlns:webcf="@ui5/webcomponents-fiori/dist"
+	core:require="{
+        iconAI: '@ui5/webcomponents-icons/ai',
+        iconStop: '@ui5/webcomponents-icons/stop',
+		iconNavigationDownArrow: '@ui5/webcomponents-icons/navigation-down-arrow'
+    }">
+	<App id="app">
+		<Page id="toolPageWrapper" showHeader="false">
+			<tnt:ToolPage id="toolPage">
+				<tnt:header>
+					<webcf:ShellBar primaryTitle="Seamless AI Integration">
+						<webcf:logo>
+							<Image src="images/SAP_Logo.svg" alt="Logo" />
+						</webcf:logo>
+					</webcf:ShellBar>
+				</tnt:header>
+
+				<tnt:mainContents>
+					<VBox class="sapUiSmallMargin">
+						<webc:Dialog id="acknowledgementDialog" class="acknowledgementDialog" open="true" headerText="AI Acknowledgement" >
+							<l:VerticalLayout class="sapUiResponsiveContentPadding">
+								<webc:Text text="[ &lt;Application Help&gt; ] now provides embedded AI (&quot;Artificial Intelligence&quot;) services. For more information, see"/>
+								<webc:Link href="https://www.sap.com" text="&lt;link&gt;"></webc:Link>
+								<webc:Title level="H5" text="Disclaimer"></webc:Title>
+								<webc:Text text="Artificial Intelligence (AI) generates results based on multiple sources. Outputs may contain errors and inaccuracies. Consider reviewing all generated results and adjust as necessary."></webc:Text>
+								<webc:CheckBox id="dontShowAgain" text="Don't show this message again"></webc:CheckBox>
+							</l:VerticalLayout>
+
+							<webc:footer>
+								<webc:Button id="okButton" design="Emphasized" click=".onDialogOkButton" text="OK" class="dialogCloser"></webc:Button>
+								<webc:Button id="cancelButton" text="Cancel" click=".onDialogCancelButton" class="dialogCloser"></webc:Button>
+							</webc:footer>
+						</webc:Dialog>
+
+					<webc:Card class="sapUiAIIntegrationCard">
+							<webc:header>
+								<webc:CardHeader
+									titleText="Michael Adams"
+									subtitle-text="Senior Sales Executive"
+								>
+									<webc:avatar>
+										<Image src="https://ui5.github.io/webcomponents/images/avatars/man_avatar_1.png" slot="avatar" alt="avatar"/>
+									</webc:avatar>
+								</webc:CardHeader>
+
+							</webc:header>
+							<VBox class="quickPromptSection">
+								<webc:Label required="true" text="To:"/>
+								<VBox class="sapUiAIIntegrationTokenContainer">
+									<HBox>
+									<webc:Token class="sapUiAIIntegrationTokenText" selected="true" text="Diana Mihaylova" ></webc:Token>
+									<webc:Token class="sapUiAIIntegrationTokenText" selected="true" text="DL Marketing Sector SAP" ></webc:Token>
+									</HBox>
+								</VBox>
+
+								<VBox class="quickPromptLblBtn">
+									<webc:Label class="sapUiAIIntegrationCardButton" required="true" text="Offer:"/>
+									<webcai:Button id="quickPromptAiButton" class="quickPromptAiButton" state="generate" click=".aiQuickPromptButtonClickHandler">
+										<webcai:ButtonState name="generate" text="Generate" icon="ai"></webcai:ButtonState>
+										<webcai:ButtonState name="generating" text="Stop Generating" icon="stop"></webcai:ButtonState>
+										<webcai:ButtonState name="reviseGenerating" text="Stop Generating" icon="stop"></webcai:ButtonState>
+										<webcai:ButtonState name="revise" text="Revise" icon="ai" endIcon="navigation-down-arrow"></webcai:ButtonState>
+									</webcai:Button>
+								</VBox>
+								<webc:TextArea id="output" class="sapUIAIIntegratinCardTextArea"></webc:TextArea>
+							</VBox>
+								<VBox class="quickPromptCardFooter">
+									<webc:Button id="footerBtnSend" design="Emphasized" text="Send" click=".sendTextHandler"></webc:Button>
+									<webc:Button id="footerBtnCancel" design="Transparent" text="Cancel" click=".onCancelClick"></webc:Button>
+								</VBox>
+							<webc:Toast id="quickPromptToast" placement="MiddleCenter" duration="3000" text="Your message was sent successfully!"></webc:Toast>
+						</webc:Card>
+						<webc:Menu id="reviseMenu" horizontalAlign="End" itemClick=".reviseMenuItemClickHandler">
+							<webc:MenuItem text="Regenerate"></webc:MenuItem>
+							<webc:MenuSeparator></webc:MenuSeparator>
+							<webc:MenuItem text="Fix Spelling and Grammar"></webc:MenuItem>
+							<webc:MenuItem text="Rewrite Text">
+								<webc:MenuItem text="Simplify"></webc:MenuItem>
+								<webc:MenuItem text="Expand"></webc:MenuItem>
+								<webc:MenuItem text="Rephrase"></webc:MenuItem>
+								<webc:MenuItem text="Summarize"></webc:MenuItem>
+							</webc:MenuItem>
+							<webc:MenuItem text="Make Bulleted List"></webc:MenuItem>
+							<webc:MenuItem text="Translate">
+								<webc:MenuItem text="Bulgarian"></webc:MenuItem>
+								<webc:MenuItem text="English"></webc:MenuItem>
+								<webc:MenuItem text="German"></webc:MenuItem>
+							</webc:MenuItem>
+							<webc:MenuSeparator></webc:MenuSeparator>
+							<webc:MenuItem text="Generate Error"></webc:MenuItem>
+							<webc:MenuItem text="Clear Error"></webc:MenuItem>
+						</webc:Menu>
+					</VBox>
+				</tnt:mainContents>
+			</tnt:ToolPage>
+
+			<mvc:XMLView id="notificationsView" viewName="ai.integration.view.Notifications" />
+		</Page>
+	</App>
+</mvc:View>
