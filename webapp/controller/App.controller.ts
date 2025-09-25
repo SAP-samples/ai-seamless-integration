@@ -9,10 +9,11 @@ import WebCButton from "@ui5/webcomponents/dist/Button";
 import WebCDialog from "@ui5/webcomponents/dist/Dialog";
 import WebCPopover from "@ui5/webcomponents/dist/Popover";
 import WebCTextArea from "@ui5/webcomponents/dist/TextArea";
+import {ValueState} from "sap/ui/core/library";
 import { ShellBar$NotificationsClickEvent } from "sap/ui/webc/fiori/ShellBar";
 import WebCToast from "@ui5/webcomponents/dist/Toast";
-import WebCMenu from "@ui5/webcomponents/dist/Menu.js";
-import { AIButton$clickEvent } from "sap/ui/webc/ai/Button";
+import WebCMenu from "@ui5/webcomponents/dist/Menu";
+import AIButton$clickEvent from "@ui5/webcomponents-ai/dist/Button";
 import WebCAIButton from "@ui5/webcomponents-ai/dist/Button";
 
 
@@ -20,7 +21,6 @@ import WebCAIButton from "@ui5/webcomponents-ai/dist/Button";
  * @namespace ai.integration.controller
  */
 export default class App extends BaseController {
-
 	generationId: number = undefined;
 	generationStopped: boolean = false;
 	text: PredefinedTexts = null;
@@ -71,7 +71,7 @@ export default class App extends BaseController {
 	}
 
 	aiQuickPromptButtonClickHandler(): void {
-		const button = this.getView().byId("quickPromptAiButton") as unknown as WebCAIButton;
+		const button = this.getView().byId("quickPromptButton") as unknown as WebCAIButton;
 		const sendButton = this.getView().byId("footerBtnSend").getDomRef() as HTMLElement as WebCButton;
 		const predefinedTexts = this.text.predefinedTexts;
 		const menu = this.getView().byId("reviseMenu") as unknown as WebCMenu;
@@ -123,19 +123,21 @@ export default class App extends BaseController {
 		}
 
 		const output = this.getView().byId("output") as unknown as WebCTextArea;
-		(output.getDomRef() as HTMLElement as WebCTextArea).disabled = true;
+		// @ts-expect-error: setValue and getValue is not in the type but exists at runtime
+		output.setEnabled(false);
 		const words = text.split(" ");
-		const sendButton = this.getView().byId("footerBtnSend").getDomRef() as HTMLElement as WebCAIButton;
+		const sendButton = this.getView().byId("footerBtnSend") as unknown as WebCAIButton;
 		let currentWordIndex = 0;
 		// @ts-expect-error: setText is not in the type but exists at runtime
-		output.setText();
+		output.setValue("");
 
 		this.generationId = setInterval(() => {
 			if (currentWordIndex < words.length) {
 				// @ts-expect-error: setValue and getValue is not in the type but exists at runtime
 				output.setValue(`${output.getValue()}${words[currentWordIndex]} `, true);
 				currentWordIndex++;
-				sendButton.disabled = true;
+				// @ts-expect-error: setText is not in the type but exists at runtime
+				sendButton.setEnabled(false);
 				// @ts-expect-error: setEnabled and getValue is not in the type but exists at runtime
 				output.setEnabled(false);
 			} else {
@@ -144,7 +146,8 @@ export default class App extends BaseController {
 					button.setState("revise");
 				}
 				clearInterval(this.generationId);
-				sendButton.disabled = false;
+				// @ts-expect-error: setEnabled and getValue is not in the type but exists at runtime
+				sendButton.setEnabled(true);
 				// @ts-expect-error: setEnabled and getValue is not in the type but exists at runtime
 				output.setEnabled(true);
 			}
@@ -158,9 +161,9 @@ export default class App extends BaseController {
 		clearInterval(this.generationId);
 		this.generationStopped = true;
 		// @ts-expect-error: setEnabled and getValue is not in the type but exists at runtime
-		sendButton.setEnabled(false);
+		sendButton.setEnabled(true);
 		// @ts-expect-error: setEnabled and getValue is not in the type but exists at runtime
-		output.setEnabled(false);
+		output.setEnabled(true);
 
 	}
 
@@ -180,12 +183,12 @@ export default class App extends BaseController {
 
 	clearValueState(output: WebCTextArea ) : void {
 		// @ts-expect-error: setValueState is not in the type but exists at runtime
-		output.setValueState("None");
+		output.setValueState(ValueState.None);
 	}
 
 	setNegativeValueState(output: WebCTextArea) : void {
 		// @ts-expect-error: setValueState is not in the type but exists at runtime
-		output.setValueState("Negative");
+		output.setValueState(ValueState.Error);
 	}
 
 	fixSpellingAndGrammar(button: WebCAIButton, output: WebCTextArea, predefinedTexts: object) : void {
@@ -194,10 +197,10 @@ export default class App extends BaseController {
 			this.setNegativeValueState(output);
 		} else {
 			// @ts-expect-error: setValueState is not in the type but exists at runtime
-			output.setValueState("Positive");
+			output.setValueState(ValueState.Success);
 			setTimeout(() => {
 				// @ts-expect-error: setValueState is not in the type but exists at runtime
-				output.setValueState("None");
+				output.setValueState(ValueState.None);
 			}, 3000);
 		}
 	}
@@ -207,16 +210,20 @@ export default class App extends BaseController {
 		const predefinedTextsExpanded = this.text.predefinedTextsExpanded;
 		const predefinedTextsRephrased = this.text.predefinedTextsRephrased;
 		const predefinedTextsSimplified = this.text.predefinedTextsSimplified;
-
-		return output.value.trim() !== predefinedTexts[this.translationKey][this.currentTextKey]
-			&& output.value.trim() !== predefinedTextsExpanded[this.translationKey][this.currentTextKey]
-			&& output.value.trim() !== predefinedTextsBulleted[this.translationKey][this.currentTextKey]
-			&& output.value.trim() !== predefinedTextsRephrased[this.translationKey][this.currentTextKey]
-			&& output.value.trim() !== predefinedTextsSimplified[this.translationKey][this.currentTextKey];
+		// @ts-expect-error: getValue is not in the type but exists at runtime
+		return output.getValue().trim() !== predefinedTexts[this.translationKey][this.currentTextKey]
+			// @ts-expect-error: getValue is not in the type but exists at runtime
+			&& output.getValue().trim() !== predefinedTextsExpanded[this.translationKey][this.currentTextKey]
+			// @ts-expect-error: getValue is not in the type but exists at runtime
+			&& output.getValue().trim() !== predefinedTextsBulleted[this.translationKey][this.currentTextKey]
+			// @ts-expect-error: getValue is not in the type but exists at runtime
+			&& output.getValue().trim() !== predefinedTextsRephrased[this.translationKey][this.currentTextKey]
+			// @ts-expect-error: getValue is not in the type but exists at runtime
+			&& output.getValue().trim() !== predefinedTextsSimplified[this.translationKey][this.currentTextKey];
 	}
 
 	reviseMenuItemClickHandler(event: AIButton$clickEvent):void {
-		const button = this.getView().byId("quickPromptAiButton") as unknown as WebCAIButton;;
+		const button = this.getView().byId("quickPromptButton") as unknown as WebCAIButton;;
 		const predefinedTexts = this.text?.predefinedTexts;
 		const predefinedTextsBulleted = this.text.predefinedTextsBulleted;
 		const predefinedTextsExpanded = this.text.predefinedTextsExpanded;
@@ -280,7 +287,7 @@ export default class App extends BaseController {
 			// @ts-expect-error: setOpen is not in the type but exists at runtime
 			toast.setOpen(true);
 			// @ts-expect-error: setValueState is not in the type but exists at runtime
-			output.setValueState("None");
+			output.setValueState(ValueState.None);
 			// @ts-expect-error: setValue is not in the type but exists at runtime
 			output.setValue("");
 		}

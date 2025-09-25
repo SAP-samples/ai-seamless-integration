@@ -25,8 +25,11 @@
 /* End notifications */
 
 /* AI Acknowledgements  Dialog*/
+.aiIntegrationAcknowledgementDialog::part(content) {
+	padding: 0;
+}
 
-.acknowledgementDialog::part(footer) {
+.aiIntegrationAcknowledgementDialog::part(footer) {
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
@@ -37,29 +40,29 @@
 /* End AI Acknowledgements Dialog */
 
 /* AI Card */
-.sapUiAIIntegrationCard {
+.aiIntegrationCard {
 	width: 600px;
 }
 
-.sapUiAIIntegrationCardButton {
+.aiIntegrationCardButton {
 	align-self: flex-end;
 }
 
-.sapUIAIIntegratinCardTextArea {
+.aiIntegrationCardTextArea {
 	height: 350px;
 }
 
-.sapUiAIIntegrationTokenText {
+.aiIntegrationTokenText {
 	width: fit-content;
 	margin-block-end: 1rem;
 }
 
-.sapUiAIIntegrationTokenContainer {
+.aiIntegrationTokenContainer {
 	display: flex;
 	gap: 0.125rem;
 }
 
-.quickPromptSection {
+.aiIntegrationQuickPromptSection {
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-end;
@@ -69,18 +72,18 @@
 	gap: 0.5rem;
 }
 
-.quickPromptAiButton {
+.aiIntegrationQuickPromptAiButton {
 	align-self: flex-end;
 }
 
-.quickPromptLblBtn {
+.aiIntegrationQuickPromptLblBtn {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: center;
 }
 
-.quickPromptCardFooter {
+.aiIntegrationQuickPromptCardFooter {
 	display: flex;
 	flex-direction: row;
 	justify-content: flex-end;

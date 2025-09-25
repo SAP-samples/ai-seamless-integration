@@ -27,7 +27,7 @@
 
 				<tnt:mainContents>
 					<VBox class="sapUiSmallMargin">
-						<webc:Dialog id="acknowledgementDialog" class="acknowledgementDialog" open="true" headerText="AI Acknowledgement" >
+						<webc:Dialog id="acknowledgementDialog" class="aiIntegrationAcknowledgementDialog" open="true" headerText="AI Acknowledgement" >
 							<l:VerticalLayout class="sapUiResponsiveContentPadding">
 								<webc:Text text="[ &lt;Application Help&gt; ] now provides embedded AI (&quot;Artificial Intelligence&quot;) services. For more information, see"/>
 								<webc:Link href="https://www.sap.com" text="&lt;link&gt;"></webc:Link>
@@ -42,7 +42,7 @@
 							</webc:footer>
 						</webc:Dialog>
 
-					<webc:Card class="sapUiAIIntegrationCard">
+						<webc:Card class="aiIntegrationCard">
 							<webc:header>
 								<webc:CardHeader
 									titleText="Michael Adams"
@@ -52,29 +52,28 @@
 										<Image src="https://ui5.github.io/webcomponents/images/avatars/man_avatar_1.png" slot="avatar" alt="avatar"/>
 									</webc:avatar>
 								</webc:CardHeader>
-
 							</webc:header>
-							<VBox class="quickPromptSection">
+							<VBox class="aiIntegrationQuickPromptSection">
 								<webc:Label required="true" text="To:"/>
-								<VBox class="sapUiAIIntegrationTokenContainer">
+								<VBox class="aiIntegrationTokenContainer">
 									<HBox>
-									<webc:Token class="sapUiAIIntegrationTokenText" selected="true" text="Diana Mihaylova" ></webc:Token>
-									<webc:Token class="sapUiAIIntegrationTokenText" selected="true" text="DL Marketing Sector SAP" ></webc:Token>
+										<webc:Token class="aiIntegrationTokenText" selected="true" text="Diana Mihaylova" ></webc:Token>
+										<webc:Token class="aiIntegrationTokenText" selected="true" text="DL Marketing Sector SAP" ></webc:Token>
 									</HBox>
 								</VBox>
 
-								<VBox class="quickPromptLblBtn">
-									<webc:Label class="sapUiAIIntegrationCardButton" required="true" text="Offer:"/>
-									<webcai:Button id="quickPromptAiButton" class="quickPromptAiButton" state="generate" click=".aiQuickPromptButtonClickHandler">
+								<VBox class="aiIntegrationQuickPromptLblBtn">
+									<webc:Label class="aiIntegrationCardButton" required="true" text="Offer:"/>
+									<webcai:Button id="quickPromptButton" class="aiIntegrationQuickPromptAiButton" state="generate" click=".aiQuickPromptButtonClickHandler">
 										<webcai:ButtonState name="generate" text="Generate" icon="ai"></webcai:ButtonState>
 										<webcai:ButtonState name="generating" text="Stop Generating" icon="stop"></webcai:ButtonState>
 										<webcai:ButtonState name="reviseGenerating" text="Stop Generating" icon="stop"></webcai:ButtonState>
 										<webcai:ButtonState name="revise" text="Revise" icon="ai" endIcon="navigation-down-arrow"></webcai:ButtonState>
 									</webcai:Button>
 								</VBox>
-								<webc:TextArea id="output" class="sapUIAIIntegratinCardTextArea"></webc:TextArea>
+								<webc:TextArea id="output" class="aiIntegrationCardTextArea"></webc:TextArea>
 							</VBox>
-								<VBox class="quickPromptCardFooter">
+								<VBox class="aiIntegrationQuickPromptCardFooter">
 									<webc:Button id="footerBtnSend" design="Emphasized" text="Send" click=".sendTextHandler"></webc:Button>
 									<webc:Button id="footerBtnCancel" design="Transparent" text="Cancel" click=".onCancelClick"></webc:Button>
 								</VBox>
