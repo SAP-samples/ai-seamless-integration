@@ -14,6 +14,7 @@ import Toast from "@ui5/webcomponents/dist/Toast";
 import Menu from "@ui5/webcomponents/dist/Menu";
 import AIButton$clickEvent from "@ui5/webcomponents-ai/dist/Button";
 import WebCAIButton from "@ui5/webcomponents-ai/dist/Button";
+import LanguageCode from "../model/LanguageCode";
 
 
 /**
@@ -23,7 +24,7 @@ export default class App extends BaseController {
 	generationId: number;
 	generationStopped: boolean = false;
 	textObject: PredefinedTextsData = null;
-	translationKey: string = "en";
+	translationKey: string = LanguageCode.EN;
 	currentTextKey: string;
 
 	/**
@@ -259,15 +260,15 @@ export default class App extends BaseController {
 				this.startTextGeneration(button, "reviseGenerating", predefinedTextsSummarized);
 				break;
 			case "Bulgarian":
-				this.translationKey = "bg";
+				this.translationKey = LanguageCode.BG;
 				this.startTextGeneration(button, "reviseGenerating", predefinedTexts);
 				break;
 			case "English":
-				this.translationKey = "en";
+				this.translationKey = LanguageCode.EN;
 				this.startTextGeneration(button, "reviseGenerating", predefinedTexts);
 				break;
 			case "German":
-				this.translationKey = "de";
+				this.translationKey = LanguageCode.DE;
 				this.startTextGeneration(button, "reviseGenerating", predefinedTexts);
 				break;
 		}

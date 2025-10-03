@@ -16,7 +16,6 @@ interface PredefinedTextsData {
 }
 
 export {
-	PredefinedText,
 	PredefinedTexts,
 	PredefinedTextsData
 }
