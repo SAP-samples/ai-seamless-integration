@@ -80,7 +80,7 @@ export default class App extends BaseController {
 				// @ts-expect-error: setState is not in the type but exists at runtime
 				button.setState("generating");
 				// @ts-expect-error: setState is not in the type but exists at runtime
-				sendButton.setEnable(false);
+				sendButton.setEnabled(false);
 				this.startQuickPromptGeneration(button);
 				const keys = Object.keys(predefinedTexts[this.translationKey]);
 				const randomKey = keys[Math.floor(Math.random() * keys.length)];
