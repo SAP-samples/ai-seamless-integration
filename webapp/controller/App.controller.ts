@@ -274,7 +274,7 @@ export default class App extends BaseController {
 		}
 	}
 
-	sendTextHandler(event:any):void {
+	sendTextHandler():void {
 		const output = this.getView().byId("output") as unknown as TextArea;
 		const toast = this.getView().byId("quickPromptToast") as unknown as Toast;
 
