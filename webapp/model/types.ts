@@ -6,11 +6,17 @@ interface PredefinedTexts {
 	[language: string]: PredefinedText;
 }
 
-export default interface PredefinedTextsData {
+interface PredefinedTextsData {
 	predefinedTexts: PredefinedTexts;
 	predefinedTextsBulleted: PredefinedTexts;
 	predefinedTextsExpanded: PredefinedTexts;
 	predefinedTextsRephrased: PredefinedTexts;
 	predefinedTextsSimplified: PredefinedTexts;
 	predefinedTextsSummarized: PredefinedTexts;
+}
+
+export {
+	PredefinedText,
+	PredefinedTexts,
+	PredefinedTextsData
 }
