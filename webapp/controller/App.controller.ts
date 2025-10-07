@@ -91,7 +91,6 @@ export default class App extends BaseController {
 
 	onDialogCancelButton(): void {
 		const acknowledgementDialog = this.getView().byId("acknowledgementDialog") as unknown as Dialog;
-		// @ts-expect-error: setOpen is not in the type but exists at runtime
 		acknowledgementDialog.setOpen(false)
 	}
 
