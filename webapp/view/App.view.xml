@@ -64,17 +64,17 @@
 
 								<VBox class="aiIntegrationQuickPromptLblBtn">
 									<webc:Label class="aiIntegrationCardButton" required="true" text="Offer:"/>
-									<webcai:Button id="quickPromptButton" class="aiIntegrationQuickPromptAiButton" state="generate" click=".aiQuickPromptButtonClickHandler">
+									<webcai:Button id="quickPromptButton" class="aiIntegrationQuickPromptAiButton" state="{appView>/buttonState}" click=".aiQuickPromptButtonClickHandler">
 										<webcai:ButtonState name="generate" text="Generate" icon="ai"></webcai:ButtonState>
 										<webcai:ButtonState name="generating" text="Stop Generating" icon="stop"></webcai:ButtonState>
 										<webcai:ButtonState name="reviseGenerating" text="Stop Generating" icon="stop"></webcai:ButtonState>
 										<webcai:ButtonState name="revise" text="Revise" icon="ai" endIcon="navigation-down-arrow"></webcai:ButtonState>
 									</webcai:Button>
 								</VBox>
-								<webc:TextArea id="output" class="aiIntegrationCardTextArea"></webc:TextArea>
+								<webc:TextArea id="output" class="aiIntegrationCardTextArea" enabled="{appView>/outputEnabledc}" valueState="{appView>/outputValueState}" value="{appView>/outputValue}"></webc:TextArea>
 							</VBox>
 								<VBox class="aiIntegrationQuickPromptCardFooter">
-									<webc:Button id="footerBtnSend" design="Emphasized" text="Send" click=".sendTextHandler"></webc:Button>
+									<webc:Button id="footerBtnSend" design="Emphasized" enabled="{appView>/sendButtonEnabled}" text="Send" click=".sendTextHandler"></webc:Button>
 									<webc:Button id="footerBtnCancel" design="Transparent" text="Cancel" click=".onCancelClick"></webc:Button>
 								</VBox>
 							<webc:Toast id="quickPromptToast" placement="MiddleCenter" duration="3000" text="Your message was sent successfully!"></webc:Toast>

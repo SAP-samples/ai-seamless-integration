@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import BaseController from "ai/integration/controller/BaseController";
 import XMLView from "sap/ui/core/mvc/XMLView";
+import JSONModel from "sap/ui/model/json/JSONModel";
 import { PredefinedTextsData, PredefinedTexts} from "../model/types";
 
 // UI5 Web Components
 import Button from "@ui5/webcomponents/dist/Button";
 import Dialog from "@ui5/webcomponents/dist/Dialog";
 import Popover from "@ui5/webcomponents/dist/Popover";
-import TextArea from "@ui5/webcomponents/dist/TextArea";
 import {ValueState} from "sap/ui/core/library";
 import { ShellBar$NotificationsClickEvent } from "sap/ui/webc/fiori/ShellBar";
 import Toast from "@ui5/webcomponents/dist/Toast";
@@ -21,9 +21,9 @@ import LanguageCode from "../model/LanguageCode";
  * @namespace ai.integration.controller
  */
 export default class App extends BaseController {
+	TEXT_OBJECT_URL = "https://ui5.github.io/webcomponents/nightly/data/predefinedTexts.json";
 	generationId: number;
 	generationStopped: boolean = false;
-	textObject: PredefinedTextsData = null;
 	translationKey: string = LanguageCode.EN;
 	currentTextKey: string;
 
@@ -31,9 +31,35 @@ export default class App extends BaseController {
 	 * Called when the controller is instantiated.
 	 */
 	async onInit() {
-		const response  = await fetch("https://ui5.github.io/webcomponents/nightly/data/predefinedTexts.json");
-		this.textObject = await response.json();
 		this.applyContentDensity();
+		this.initViewModel();
+	}
+
+	/**
+	 * Initializes the view model.
+	 * This is used to set the initial state of the app.
+	 */
+	initViewModel(): void {
+		const initialModelData = {
+			outputValue: "",
+			outputValueState: ValueState.None,
+			outputEnabled: true,
+			buttonState: "generate",
+			sendButtonEnabled: true
+		};
+
+		const model = new JSONModel(initialModelData);
+		const externalData = new JSONModel(this.TEXT_OBJECT_URL);
+
+		this.getView().setModel(model, "appView");
+
+		externalData.attachRequestCompleted(() => {
+			if (externalData.getData()) {
+				const currentModelState = model.getData();
+				currentModelState.textObject = externalData.getData() as PredefinedTextsData;
+				model.setData(currentModelState);
+			}
+		});
 	}
 
 	/**
@@ -68,28 +94,26 @@ export default class App extends BaseController {
 	}
 
 	aiQuickPromptButtonClickHandler(): void {
+		const model = this.getView().getModel("appView") as JSONModel;
+		const modelData = model.getData();
+
 		const button = this.getView().byId("quickPromptButton") as unknown as WebCAIButton;
-		const sendButton = this.getView().byId("footerBtnSend") as unknown as Button;
-		const predefinedTexts = this.textObject.predefinedTexts;
+		const predefinedTexts = modelData.textObject.predefinedTexts;
 		const menu = this.getView().byId("reviseMenu") as unknown as Menu;
 
-		// @ts-expect-error: getState is not in the type but exists at runtime
-		switch(button.getState()) {
+		switch(modelData.buttonState) {
 			case "":
 			case "generate":
-				// @ts-expect-error: setState is not in the type but exists at runtime
-				button.setState("generating");
-				// @ts-expect-error: setState is not in the type but exists at runtime
-				sendButton.setEnabled(false);
-				this.startQuickPromptGeneration(button);
+				modelData.buttonState = "generating";
+				modelData.sendButtonEnabled = false;
+				this.startQuickPromptGeneration();
 				const keys = Object.keys(predefinedTexts[this.translationKey]);
 				const randomKey = keys[Math.floor(Math.random() * keys.length)];
 				this.currentTextKey = randomKey;
-				this.generateText(predefinedTexts[this.translationKey][randomKey], button);
+				this.generateText(predefinedTexts[this.translationKey][randomKey]);
 				break;
 			case "generating":
-				// @ts-expect-error: setState is not in the type but exists at runtime
-				button.setState("revise");
+				modelData.buttonState = "revise";
 				this.stopQuickPromptGeneration();
 				break;
 			case "revise":
@@ -99,193 +123,211 @@ export default class App extends BaseController {
 				menu.setOpen(true);
 				break;
 			case "reviseGenerating":
-				// @ts-expect-error: setOpen is not in the type but exists at runtime
-				button.setState("revise");
+				modelData.buttonState = "revise";
 				this.stopQuickPromptGeneration();
 				break;
 		}
+		model.updateBindings(true);
 	}
 
-	startQuickPromptGeneration(button: WebCAIButton): void {
+	startQuickPromptGeneration(): void {
+		const model = this.getView().getModel("appView") as JSONModel;
+		const modelData = model.getData();
+
 		this.generationStopped = false;
 		this.generationId = setTimeout(function() {
-			button.state = "revise";
+			modelData.buttonState = "revise";
+			model.updateBindings(true);
 		}, 2000);
 	}
 
-	generateText(text: string, button: WebCAIButton): void {
+	generateText(text: string): void {
 		if (this.generationId) {
 			clearInterval(this.generationId);
 		}
 
-		const output = this.getView().byId("output") as unknown as TextArea;
-		// @ts-expect-error: setValue and getValue is not in the type but exists at runtime
-		output.setEnabled(false);
+		const model = this.getView().getModel("appView") as JSONModel;
+		const modelData = model.getData();
+
+		modelData.outputEnabled = false;
+		modelData.outputValue = "";
+		model.updateBindings(true);
+
 		const words = text.split(" ");
-		const sendButton = this.getView().byId("footerBtnSend") as unknown as WebCAIButton;
 		let currentWordIndex = 0;
-		// @ts-expect-error: setText is not in the type but exists at runtime
-		output.setValue("");
 
 		this.generationId = setInterval(() => {
 			if (currentWordIndex < words.length) {
-				// @ts-expect-error: setValue and getValue is not in the type but exists at runtime
-				output.setValue(`${output.getValue()}${words[currentWordIndex]} `, true);
+
+				modelData.outputValue = `${modelData.outputValue}${words[currentWordIndex]} `;
 				currentWordIndex++;
-				// @ts-expect-error: setText is not in the type but exists at runtime
-				sendButton.setEnabled(false);
-				// @ts-expect-error: setEnabled and getValue is not in the type but exists at runtime
-				output.setEnabled(false);
+				modelData.sendButtonEnabled = false;
+				modelData.outputEnabled = false;
 			} else {
 				if (!this.generationStopped) {
-					// @ts-expect-error: setState is not in the type but exists at runtime
-					button.setState("revise");
+					modelData.buttonState = "revise";
 				}
 				clearInterval(this.generationId);
-				// @ts-expect-error: setEnabled and getValue is not in the type but exists at runtime
-				sendButton.setEnabled(true);
-				// @ts-expect-error: setEnabled and getValue is not in the type but exists at runtime
-				output.setEnabled(true);
+				modelData.sendButtonEnabled = true;
+				modelData.outputEnabled = true;
 			}
+			model.updateBindings(true);
 		}, 75);
 	}
 
 	stopQuickPromptGeneration(): void {
-		const sendButton = this.getView().byId("footerBtnSend") as unknown as WebCAIButton;
-		const output = this.getView().byId("output") as unknown as TextArea;
+		const model = this.getView().getModel("appView") as JSONModel;
+		const modelData = model.getData();
 
 		clearInterval(this.generationId);
 		this.generationStopped = true;
-		// @ts-expect-error: setEnabled and getValue is not in the type but exists at runtime
-		sendButton.setEnabled(true);
-		// @ts-expect-error: setEnabled and getValue is not in the type but exists at runtime
-		output.setEnabled(true);
-
+		modelData.sendButtonEnabled = true;
+		modelData.outputEnabled = true;
+		model.updateBindings(true);
 	}
 
-	setStateAndGenerate(button: WebCAIButton, state: string, textKey: string, predefinedTexts: PredefinedTexts): void {
-		// @ts-expect-error: setState is not in the type but exists at runtime
-		button.setState(state);
-		this.startQuickPromptGeneration(button);
-		this.generateText(predefinedTexts[this.translationKey][textKey], button);
+	setStateAndGenerate(state: string, textKey: string, predefinedTexts: PredefinedTexts): void {
+		const model = this.getView().getModel("appView") as JSONModel;
+		const modelData = model.getData();
+
+		modelData.buttonState = state;
+		model.updateBindings(true);
+		this.startQuickPromptGeneration();
+		this.generateText(predefinedTexts[this.translationKey][textKey]);
 	}
 
-	startTextGeneration(button: WebCAIButton, state: string, predefinedTexts: PredefinedTexts): void {
-		// @ts-expect-error: setState is not in the type but exists at runtime
-		button.setState(state);
-		this.startQuickPromptGeneration(button);
-		this.generateText(predefinedTexts[this.translationKey][this.currentTextKey], button);
+	startTextGeneration(state: string, predefinedTexts: PredefinedTexts): void {
+		const model = this.getView().getModel("appView") as JSONModel;
+		const modelData = model.getData();
+
+		modelData.buttonState = state;
+		model.updateBindings(true);
+		this.startQuickPromptGeneration();
+		this.generateText(predefinedTexts[this.translationKey][this.currentTextKey]);
 	}
 
-	clearValueState(output: TextArea ) : void {
-		// @ts-expect-error: setValueState is not in the type but exists at runtime
-		output.setValueState(ValueState.None);
+	clearValueState() : void {
+		const model = this.getView().getModel("appView") as JSONModel;
+		const modelData = model.getData();
+
+		modelData.outputValueState = ValueState.None;
+		model.updateBindings(true);
 	}
 
-	setNegativeValueState(output: TextArea) : void {
-		// @ts-expect-error: setValueState is not in the type but exists at runtime
-		output.setValueState(ValueState.Error);
+	setNegativeValueState() : void {
+		const model = this.getView().getModel("appView") as JSONModel;
+		const modelData = model.getData();
+
+		modelData.outputValueState = ValueState.Error;
+		model.updateBindings(true);
 	}
 
-	fixSpellingAndGrammar(button: WebCAIButton, output: TextArea, predefinedTexts: PredefinedTexts) : void {
-		if (this.isTextWrong(output, predefinedTexts)) {
-			this.setStateAndGenerate(button, "generating", this.currentTextKey, predefinedTexts);
-			this.setNegativeValueState(output);
+	fixSpellingAndGrammar(predefinedTexts: PredefinedTexts) : void {
+		const model = this.getView().getModel("appView") as JSONModel;
+		const modelData = model.getData();
+
+		if (this.isTextWrong(predefinedTexts)) {
+			this.setStateAndGenerate("generating", this.currentTextKey, predefinedTexts);
+			this.setNegativeValueState();
 		} else {
-			// @ts-expect-error: setValueState is not in the type but exists at runtime
-			output.setValueState(ValueState.Success);
+			modelData.outputValueState = ValueState.Success;
+			model.updateBindings(true);
+
 			setTimeout(() => {
-				// @ts-expect-error: setValueState is not in the type but exists at runtime
-				output.setValueState(ValueState.None);
+				modelData.outputValueState = ValueState.None;
+				model.updateBindings(true);
 			}, 3000);
 		}
 	}
 
-	isTextWrong(output: TextArea, predefinedTexts: PredefinedTexts) : boolean {
-		const predefinedTextsBulleted = this.textObject.predefinedTextsBulleted;
-		const predefinedTextsExpanded = this.textObject.predefinedTextsExpanded;
-		const predefinedTextsRephrased = this.textObject.predefinedTextsRephrased;
-		const predefinedTextsSimplified = this.textObject.predefinedTextsSimplified;
-		// @ts-expect-error: getValue is not in the type but exists at runtime
-		return output.getValue().trim() !== predefinedTexts[this.translationKey][this.currentTextKey]
-			// @ts-expect-error: getValue is not in the type but exists at runtime
-			&& output.getValue().trim() !== predefinedTextsExpanded[this.translationKey][this.currentTextKey]
-			// @ts-expect-error: getValue is not in the type but exists at runtime
-			&& output.getValue().trim() !== predefinedTextsBulleted[this.translationKey][this.currentTextKey]
-			// @ts-expect-error: getValue is not in the type but exists at runtime
-			&& output.getValue().trim() !== predefinedTextsRephrased[this.translationKey][this.currentTextKey]
-			// @ts-expect-error: getValue is not in the type but exists at runtime
-			&& output.getValue().trim() !== predefinedTextsSimplified[this.translationKey][this.currentTextKey];
+	isTextWrong( predefinedTexts: PredefinedTexts) : boolean {
+		const model = this.getView().getModel("appView") as JSONModel;
+		const modelData = model.getData();
+		const outputValue = modelData.outputValue;
+		const textObject = modelData.textObject as PredefinedTextsData;
+
+		const predefinedTextsBulleted = textObject.predefinedTextsBulleted;
+		const predefinedTextsExpanded = textObject.predefinedTextsExpanded;
+		const predefinedTextsRephrased = textObject.predefinedTextsRephrased;
+		const predefinedTextsSimplified = textObject.predefinedTextsSimplified;
+
+		return outputValue.trim() !== predefinedTexts[this.translationKey][this.currentTextKey]
+			&& outputValue.trim() !== predefinedTextsExpanded[this.translationKey][this.currentTextKey]
+			&& outputValue.trim() !== predefinedTextsBulleted[this.translationKey][this.currentTextKey]
+			&& outputValue.trim() !== predefinedTextsRephrased[this.translationKey][this.currentTextKey]
+			&& outputValue.trim() !== predefinedTextsSimplified[this.translationKey][this.currentTextKey];
 	}
 
 	reviseMenuItemClickHandler(event: AIButton$clickEvent):void {
-		const button = this.getView().byId("quickPromptButton") as unknown as WebCAIButton;;
-		const predefinedTexts = this.textObject?.predefinedTexts;
-		const predefinedTextsBulleted = this.textObject.predefinedTextsBulleted;
-		const predefinedTextsExpanded = this.textObject.predefinedTextsExpanded;
-		const predefinedTextsRephrased = this.textObject.predefinedTextsRephrased;
-		const predefinedTextsSimplified = this.textObject.predefinedTextsSimplified;
-		const predefinedTextsSummarized = this.textObject.predefinedTextsSummarized;
-		const output = this.getView().byId("output") as unknown as TextArea;
+		const button = this.getView().byId("quickPromptButton") as unknown as WebCAIButton;
+		const model = this.getView().getModel("appView") as JSONModel;
+		const textObject = model.getData().textObject as PredefinedTextsData;
+
+		const predefinedTexts = textObject.predefinedTexts;
+		const predefinedTextsBulleted = textObject.predefinedTextsBulleted;
+		const predefinedTextsExpanded = textObject.predefinedTextsExpanded;
+		const predefinedTextsRephrased = textObject.predefinedTextsRephrased;
+		const predefinedTextsSimplified = textObject.predefinedTextsSimplified;
+		const predefinedTextsSummarized = textObject.predefinedTextsSummarized;
 
 		switch (event.getParameter("text")) {
 			case "Regenerate":
 				const keys = Object.keys(predefinedTexts[this.translationKey]);
 				const randomKey = keys[Math.floor(Math.random() * keys.length)];
 				this.currentTextKey = randomKey;
-				this.setStateAndGenerate(button, "generating", randomKey, predefinedTexts);
+				this.setStateAndGenerate("generating", randomKey, predefinedTexts);
 				break;
 			case "Make Bulleted List":
-				this.startTextGeneration(button, "reviseGenerating", predefinedTextsBulleted);
+				this.startTextGeneration("reviseGenerating", predefinedTextsBulleted);
 				break;
 			case "Clear Error":
-				this.clearValueState(output);
+				this.clearValueState();
 				break;
 			case "Fix Spelling and Grammar":
-				this.fixSpellingAndGrammar(button, output, predefinedTexts);
+				this.fixSpellingAndGrammar(predefinedTexts);
 				break;
 			case "Generate Error":
-				this.setNegativeValueState(output);
+				this.setNegativeValueState();
 				break;
 			case "Simplify":
-				this.startTextGeneration(button, "reviseGenerating", predefinedTextsSimplified);
+				this.startTextGeneration("reviseGenerating", predefinedTextsSimplified);
 				break;
 			case "Expand":
-				this.startTextGeneration(button, "reviseGenerating", predefinedTextsExpanded);
+				this.startTextGeneration("reviseGenerating", predefinedTextsExpanded);
 				break;
 			case "Rephrase":
-				this.startTextGeneration(button, "reviseGenerating", predefinedTextsRephrased);
+				this.startTextGeneration("reviseGenerating", predefinedTextsRephrased);
 				break;
 			case "Summarize":
-				this.startTextGeneration(button, "reviseGenerating", predefinedTextsSummarized);
+				this.startTextGeneration("reviseGenerating", predefinedTextsSummarized);
 				break;
 			case "Bulgarian":
 				this.translationKey = LanguageCode.BG;
-				this.startTextGeneration(button, "reviseGenerating", predefinedTexts);
+				this.startTextGeneration("reviseGenerating", predefinedTexts);
 				break;
 			case "English":
 				this.translationKey = LanguageCode.EN;
-				this.startTextGeneration(button, "reviseGenerating", predefinedTexts);
+				this.startTextGeneration("reviseGenerating", predefinedTexts);
 				break;
 			case "German":
 				this.translationKey = LanguageCode.DE;
-				this.startTextGeneration(button, "reviseGenerating", predefinedTexts);
+				this.startTextGeneration("reviseGenerating", predefinedTexts);
 				break;
 		}
 	}
 
 	sendTextHandler():void {
-		const output = this.getView().byId("output") as unknown as TextArea;
+		const model = this.getView().getModel("appView") as JSONModel;
+		const modelData = model.getData();
 		const toast = this.getView().byId("quickPromptToast") as unknown as Toast;
 
-		// @ts-expect-error: getValue is not in the type but exists at runtime
-		if (output.getValue()) {
+		if (modelData.outputValue) {
 			// @ts-expect-error: setOpen is not in the type but exists at runtime
 			toast.setOpen(true);
-			// @ts-expect-error: setValueState is not in the type but exists at runtime
-			output.setValueState(ValueState.None);
-			// @ts-expect-error: setValue is not in the type but exists at runtime
-			output.setValue("");
+
+			modelData.outputValueState = ValueState.None;
+			modelData.outputValue = "";
+			model.updateBindings(true);
 		}
 	}
 
