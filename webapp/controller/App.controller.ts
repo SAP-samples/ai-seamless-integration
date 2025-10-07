@@ -85,7 +85,6 @@ export default class App extends BaseController {
 
 	onDialogOkButton(): void {
 		const acknowledgementDialog = this.getView().byId("acknowledgementDialog") as unknown as Dialog;
-		// @ts-expect-error: setOpen is not in the type but exists at runtime
 		acknowledgementDialog.setOpen(false)
 	}
 
@@ -115,9 +114,8 @@ export default class App extends BaseController {
 				this.stopQuickPromptGeneration();
 				break;
 			case "revise":
-				// @ts-expect-error: setOpener is not in the type but exists at runtime
-				menu.setOpener(button.getDomRef() as HTMLElement);
-				// @ts-expect-error: setOpen is not in the type but exists at runtime
+
+				menu.setOpener(button.getId());
 				menu.setOpen(true);
 				break;
 			case "reviseGenerating":
@@ -288,7 +286,6 @@ export default class App extends BaseController {
 		const toast = this.getView().byId("quickPromptToast") as unknown as Toast;
 
 		if (this.viewModelData.outputValue) {
-			// @ts-expect-error: setOpen is not in the type but exists at runtime
 			toast.setOpen(true);
 
 			this.viewModelData.outputValueState = ValueState.None;
