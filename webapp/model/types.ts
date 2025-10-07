@@ -1,3 +1,4 @@
+import {ValueState} from "sap/ui/core/library";
 interface PredefinedText {
 	[key: string]: string;
 }
@@ -15,7 +16,16 @@ interface PredefinedTextsData {
 	predefinedTextsSummarized: PredefinedTexts;
 }
 
+interface ViewModelData {
+	outputValue: string,
+	outputValueState: ValueState,
+	outputEnabled: boolean,
+	buttonState: string,
+	sendButtonEnabled: boolean
+}
+
 export {
 	PredefinedTexts,
-	PredefinedTextsData
+	PredefinedTextsData,
+	ViewModelData
 }

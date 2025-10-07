@@ -2,10 +2,9 @@
 import BaseController from "ai/integration/controller/BaseController";
 import XMLView from "sap/ui/core/mvc/XMLView";
 import JSONModel from "sap/ui/model/json/JSONModel";
-import { PredefinedTextsData, PredefinedTexts} from "../model/types";
+import { PredefinedTextsData, PredefinedTexts, ViewModelData} from "../model/types";
 
 // UI5 Web Components
-import Button from "@ui5/webcomponents/dist/Button";
 import Dialog from "@ui5/webcomponents/dist/Dialog";
 import Popover from "@ui5/webcomponents/dist/Popover";
 import {ValueState} from "sap/ui/core/library";
@@ -22,6 +21,9 @@ import LanguageCode from "../model/LanguageCode";
  */
 export default class App extends BaseController {
 	TEXT_OBJECT_URL = "https://ui5.github.io/webcomponents/nightly/data/predefinedTexts.json";
+	viewModel: JSONModel;
+	viewModelData: ViewModelData;
+	textObject: PredefinedTextsData;
 	generationId: number;
 	generationStopped: boolean = false;
 	translationKey: string = LanguageCode.EN;
@@ -39,27 +41,27 @@ export default class App extends BaseController {
 	 * Initializes the view model.
 	 * This is used to set the initial state of the app.
 	 */
-	initViewModel(): void {
+	async initViewModel(): Promise<void> {
 		const initialModelData = {
 			outputValue: "",
 			outputValueState: ValueState.None,
 			outputEnabled: true,
 			buttonState: "generate",
 			sendButtonEnabled: true
-		};
+		} as ViewModelData;
 
 		const model = new JSONModel(initialModelData);
-		const externalData = new JSONModel(this.TEXT_OBJECT_URL);
+		const externalData = new JSONModel();
+
+		await externalData.loadData(this.TEXT_OBJECT_URL);
 
 		this.getView().setModel(model, "appView");
+		this.getView().setModel(externalData, "externalData");
 
-		externalData.attachRequestCompleted(() => {
-			if (externalData.getData()) {
-				const currentModelState = model.getData();
-				currentModelState.textObject = externalData.getData() as PredefinedTextsData;
-				model.setData(currentModelState);
-			}
-		});
+		this.viewModel = this.getView().getModel("appView") as JSONModel;
+		this.textObject = (this.getView().getModel("externalData") as JSONModel).getData() as PredefinedTextsData;
+
+		this.viewModelData = this.viewModel.getData() as ViewModelData;
 	}
 
 	/**
@@ -94,18 +96,15 @@ export default class App extends BaseController {
 	}
 
 	aiQuickPromptButtonClickHandler(): void {
-		const model = this.getView().getModel("appView") as JSONModel;
-		const modelData = model.getData();
-
 		const button = this.getView().byId("quickPromptButton") as unknown as WebCAIButton;
-		const predefinedTexts = modelData.textObject.predefinedTexts;
+		const predefinedTexts = this.textObject.predefinedTexts;
 		const menu = this.getView().byId("reviseMenu") as unknown as Menu;
 
-		switch(modelData.buttonState) {
+		switch(this.viewModelData.buttonState) {
 			case "":
 			case "generate":
-				modelData.buttonState = "generating";
-				modelData.sendButtonEnabled = false;
+				this.viewModelData.buttonState = "generating";
+				this.viewModelData.sendButtonEnabled = false;
 				this.startQuickPromptGeneration();
 				const keys = Object.keys(predefinedTexts[this.translationKey]);
 				const randomKey = keys[Math.floor(Math.random() * keys.length)];
@@ -113,7 +112,7 @@ export default class App extends BaseController {
 				this.generateText(predefinedTexts[this.translationKey][randomKey]);
 				break;
 			case "generating":
-				modelData.buttonState = "revise";
+				this.viewModelData.buttonState = "revise";
 				this.stopQuickPromptGeneration();
 				break;
 			case "revise":
@@ -123,21 +122,18 @@ export default class App extends BaseController {
 				menu.setOpen(true);
 				break;
 			case "reviseGenerating":
-				modelData.buttonState = "revise";
+				this.viewModelData.buttonState = "revise";
 				this.stopQuickPromptGeneration();
 				break;
 		}
-		model.updateBindings(true);
+		this.viewModel.updateBindings(true);
 	}
 
 	startQuickPromptGeneration(): void {
-		const model = this.getView().getModel("appView") as JSONModel;
-		const modelData = model.getData();
-
 		this.generationStopped = false;
-		this.generationId = setTimeout(function() {
-			modelData.buttonState = "revise";
-			model.updateBindings(true);
+		this.generationId = setTimeout(()=> {
+			this.viewModelData.buttonState = "revise";
+			this.viewModel.updateBindings(true);
 		}, 2000);
 	}
 
@@ -146,12 +142,9 @@ export default class App extends BaseController {
 			clearInterval(this.generationId);
 		}
 
-		const model = this.getView().getModel("appView") as JSONModel;
-		const modelData = model.getData();
-
-		modelData.outputEnabled = false;
-		modelData.outputValue = "";
-		model.updateBindings(true);
+		this.viewModelData.outputEnabled = false;
+		this.viewModelData.outputValue = "";
+		this.viewModel.updateBindings(true);
 
 		const words = text.split(" ");
 		let currentWordIndex = 0;
@@ -159,97 +152,77 @@ export default class App extends BaseController {
 		this.generationId = setInterval(() => {
 			if (currentWordIndex < words.length) {
 
-				modelData.outputValue = `${modelData.outputValue}${words[currentWordIndex]} `;
+				this.viewModelData.outputValue = `${this.viewModelData.outputValue}${words[currentWordIndex]} `;
 				currentWordIndex++;
-				modelData.sendButtonEnabled = false;
-				modelData.outputEnabled = false;
+				this.viewModelData.sendButtonEnabled = false;
+				this.viewModelData.outputEnabled = false;
 			} else {
 				if (!this.generationStopped) {
-					modelData.buttonState = "revise";
+					this.viewModelData.buttonState = "revise";
 				}
 				clearInterval(this.generationId);
-				modelData.sendButtonEnabled = true;
-				modelData.outputEnabled = true;
+				this.viewModelData.sendButtonEnabled = true;
+				this.viewModelData.outputEnabled = true;
 			}
-			model.updateBindings(true);
+			this.viewModel.updateBindings(true);
 		}, 75);
 	}
 
 	stopQuickPromptGeneration(): void {
-		const model = this.getView().getModel("appView") as JSONModel;
-		const modelData = model.getData();
 
 		clearInterval(this.generationId);
 		this.generationStopped = true;
-		modelData.sendButtonEnabled = true;
-		modelData.outputEnabled = true;
-		model.updateBindings(true);
+		this.viewModelData.sendButtonEnabled = true;
+		this.viewModelData.outputEnabled = true;
+		this.viewModel.updateBindings(true);
 	}
 
 	setStateAndGenerate(state: string, textKey: string, predefinedTexts: PredefinedTexts): void {
-		const model = this.getView().getModel("appView") as JSONModel;
-		const modelData = model.getData();
-
-		modelData.buttonState = state;
-		model.updateBindings(true);
+		this.viewModelData.buttonState = state;
+		this.viewModel.updateBindings(true);
 		this.startQuickPromptGeneration();
 		this.generateText(predefinedTexts[this.translationKey][textKey]);
 	}
 
 	startTextGeneration(state: string, predefinedTexts: PredefinedTexts): void {
-		const model = this.getView().getModel("appView") as JSONModel;
-		const modelData = model.getData();
-
-		modelData.buttonState = state;
-		model.updateBindings(true);
+		this.viewModelData.buttonState = state;
+		this.viewModel.updateBindings(true);
 		this.startQuickPromptGeneration();
 		this.generateText(predefinedTexts[this.translationKey][this.currentTextKey]);
 	}
 
 	clearValueState() : void {
-		const model = this.getView().getModel("appView") as JSONModel;
-		const modelData = model.getData();
-
-		modelData.outputValueState = ValueState.None;
-		model.updateBindings(true);
+		this.viewModelData.outputValueState = ValueState.None;
+		this.viewModel.updateBindings(true);
 	}
 
 	setNegativeValueState() : void {
-		const model = this.getView().getModel("appView") as JSONModel;
-		const modelData = model.getData();
-
-		modelData.outputValueState = ValueState.Error;
-		model.updateBindings(true);
+		this.viewModelData.outputValueState = ValueState.Error;
+		this.viewModel.updateBindings(true);
 	}
 
 	fixSpellingAndGrammar(predefinedTexts: PredefinedTexts) : void {
-		const model = this.getView().getModel("appView") as JSONModel;
-		const modelData = model.getData();
-
 		if (this.isTextWrong(predefinedTexts)) {
 			this.setStateAndGenerate("generating", this.currentTextKey, predefinedTexts);
 			this.setNegativeValueState();
 		} else {
-			modelData.outputValueState = ValueState.Success;
-			model.updateBindings(true);
+			this.viewModelData.outputValueState = ValueState.Success;
+			this.viewModel.updateBindings(true);
 
 			setTimeout(() => {
-				modelData.outputValueState = ValueState.None;
-				model.updateBindings(true);
+				this.viewModelData.outputValueState = ValueState.None;
+				this.viewModel.updateBindings(true);
 			}, 3000);
 		}
 	}
 
 	isTextWrong( predefinedTexts: PredefinedTexts) : boolean {
-		const model = this.getView().getModel("appView") as JSONModel;
-		const modelData = model.getData();
-		const outputValue = modelData.outputValue;
-		const textObject = modelData.textObject as PredefinedTextsData;
+		const outputValue = this.viewModelData.outputValue;
 
-		const predefinedTextsBulleted = textObject.predefinedTextsBulleted;
-		const predefinedTextsExpanded = textObject.predefinedTextsExpanded;
-		const predefinedTextsRephrased = textObject.predefinedTextsRephrased;
-		const predefinedTextsSimplified = textObject.predefinedTextsSimplified;
+		const predefinedTextsBulleted = this.textObject.predefinedTextsBulleted;
+		const predefinedTextsExpanded = this.textObject.predefinedTextsExpanded;
+		const predefinedTextsRephrased = this.textObject.predefinedTextsRephrased;
+		const predefinedTextsSimplified = this.textObject.predefinedTextsSimplified;
 
 		return outputValue.trim() !== predefinedTexts[this.translationKey][this.currentTextKey]
 			&& outputValue.trim() !== predefinedTextsExpanded[this.translationKey][this.currentTextKey]
@@ -259,16 +232,12 @@ export default class App extends BaseController {
 	}
 
 	reviseMenuItemClickHandler(event: AIButton$clickEvent):void {
-		const button = this.getView().byId("quickPromptButton") as unknown as WebCAIButton;
-		const model = this.getView().getModel("appView") as JSONModel;
-		const textObject = model.getData().textObject as PredefinedTextsData;
-
-		const predefinedTexts = textObject.predefinedTexts;
-		const predefinedTextsBulleted = textObject.predefinedTextsBulleted;
-		const predefinedTextsExpanded = textObject.predefinedTextsExpanded;
-		const predefinedTextsRephrased = textObject.predefinedTextsRephrased;
-		const predefinedTextsSimplified = textObject.predefinedTextsSimplified;
-		const predefinedTextsSummarized = textObject.predefinedTextsSummarized;
+		const predefinedTexts = this.textObject.predefinedTexts;
+		const predefinedTextsBulleted = this.textObject.predefinedTextsBulleted;
+		const predefinedTextsExpanded = this.textObject.predefinedTextsExpanded;
+		const predefinedTextsRephrased = this.textObject.predefinedTextsRephrased;
+		const predefinedTextsSimplified = this.textObject.predefinedTextsSimplified;
+		const predefinedTextsSummarized = this.textObject.predefinedTextsSummarized;
 
 		switch (event.getParameter("text")) {
 			case "Regenerate":
@@ -317,17 +286,15 @@ export default class App extends BaseController {
 	}
 
 	sendTextHandler():void {
-		const model = this.getView().getModel("appView") as JSONModel;
-		const modelData = model.getData();
 		const toast = this.getView().byId("quickPromptToast") as unknown as Toast;
 
-		if (modelData.outputValue) {
+		if (this.viewModelData.outputValue) {
 			// @ts-expect-error: setOpen is not in the type but exists at runtime
 			toast.setOpen(true);
 
-			modelData.outputValueState = ValueState.None;
-			modelData.outputValue = "";
-			model.updateBindings(true);
+			this.viewModelData.outputValueState = ValueState.None;
+			this.viewModelData.outputValue = "";
+			this.viewModel.updateBindings(true);
 		}
 	}
 
