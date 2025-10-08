@@ -4,12 +4,12 @@ import JSONModel from "sap/ui/model/json/JSONModel";
 import { PredefinedTextsData, PredefinedTexts, ViewModelData} from "../model/types";
 
 // UI5 Web Components
-import Dialog from "@ui5/webcomponents/dist/Dialog";
+import type Dialog from "@ui5/webcomponents/dist/Dialog";
 import {ValueState} from "sap/ui/core/library";
-import Toast from "@ui5/webcomponents/dist/Toast";
-import Menu from "@ui5/webcomponents/dist/Menu";
+import type Toast from "@ui5/webcomponents/dist/Toast";
+import type Menu from "@ui5/webcomponents/dist/Menu";
 import AIButton$clickEvent from "@ui5/webcomponents-ai/dist/Button";
-import WebCAIButton from "@ui5/webcomponents-ai/dist/Button";
+import type WebCAIButton from "@ui5/webcomponents-ai/dist/Button";
 import LanguageCode from "../model/LanguageCode";
 
 
