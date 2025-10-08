@@ -1,18 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import BaseController from "ai/integration/controller/BaseController";
-import XMLView from "sap/ui/core/mvc/XMLView";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import { PredefinedTextsData, PredefinedTexts, ViewModelData} from "../model/types";
 
 // UI5 Web Components
-import Dialog from "@ui5/webcomponents/dist/Dialog";
-import Popover from "@ui5/webcomponents/dist/Popover";
+import type Dialog from "@ui5/webcomponents/dist/Dialog";
 import {ValueState} from "sap/ui/core/library";
-import { ShellBar$NotificationsClickEvent } from "sap/ui/webc/fiori/ShellBar";
-import Toast from "@ui5/webcomponents/dist/Toast";
-import Menu from "@ui5/webcomponents/dist/Menu";
+import type Toast from "@ui5/webcomponents/dist/Toast";
+import type Menu from "@ui5/webcomponents/dist/Menu";
 import AIButton$clickEvent from "@ui5/webcomponents-ai/dist/Button";
-import WebCAIButton from "@ui5/webcomponents-ai/dist/Button";
+import type WebCAIButton from "@ui5/webcomponents-ai/dist/Button";
 import LanguageCode from "../model/LanguageCode";
 
 
@@ -58,8 +55,8 @@ export default class App extends BaseController {
 		this.getView().setModel(model, "appView");
 		this.getView().setModel(externalData, "externalData");
 
-		this.viewModel = this.getView().getModel("appView") as JSONModel;
-		this.textObject = (this.getView().getModel("externalData") as JSONModel).getData() as PredefinedTextsData;
+		this.viewModel = model;
+		this.textObject = externalData.getData() as PredefinedTextsData;
 
 		this.viewModelData = this.viewModel.getData() as ViewModelData;
 	}
@@ -69,18 +66,6 @@ export default class App extends BaseController {
 	 */
 	applyContentDensity(): void {
 		this.getView().addStyleClass(this.getOwnerComponent().getContentDensityClass());
-	}
-
-	/**
-	 * Called when opening the notifications popover.
-	 */
-	onNotificationsClick(e: ShellBar$NotificationsClickEvent): void {
-		const view = this.getView().byId("notificationsView") as XMLView;
-		const popover = view.byId("notificationsPopover").getDomRef() as Popover;
-
-		e.preventDefault();
-		popover.opener = e.getParameter("targetRef");
-		popover.open = true;
 	}
 
 	onDialogOkButton(): void {

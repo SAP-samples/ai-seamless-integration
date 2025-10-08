@@ -71,7 +71,7 @@
 										<webcai:ButtonState name="revise" text="Revise" icon="ai" endIcon="navigation-down-arrow"></webcai:ButtonState>
 									</webcai:Button>
 								</VBox>
-								<webc:TextArea id="output" class="aiIntegrationCardTextArea" enabled="{appView>/outputEnabledc}" valueState="{appView>/outputValueState}" value="{appView>/outputValue}"></webc:TextArea>
+								<webc:TextArea id="output" class="aiIntegrationCardTextArea" enabled="{appView>/outputEnabled}" valueState="{appView>/outputValueState}" value="{appView>/outputValue}"></webc:TextArea>
 							</VBox>
 								<VBox class="aiIntegrationQuickPromptCardFooter">
 									<webc:Button id="footerBtnSend" design="Emphasized" enabled="{appView>/sendButtonEnabled}" text="Send" click=".sendTextHandler"></webc:Button>
@@ -102,8 +102,6 @@
 					</VBox>
 				</tnt:mainContents>
 			</tnt:ToolPage>
-
-			<mvc:XMLView id="notificationsView" viewName="ai.integration.view.Notifications" />
 		</Page>
 	</App>
 </mvc:View>
