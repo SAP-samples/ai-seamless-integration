@@ -16,9 +16,9 @@ Please edit this file as it is the primary description file for your project. Yo
 [![REUSE status](https://api.reuse.software/badge/github.com/SAP-samples/ai-integration)](https://api.reuse.software/info/github.com/SAP-samples/ai-integration)
 
 ## Description
-This project explores the potential for artificial intelligence enhancement in [UI5 Web Components](https://github.com/SAP/ui5-webcomponents) into the [OpenUI5](https://github.com/SAP/openui5) framework. The aim is to highlight scenarios where modern UI5 Web Components can be further augmented by AI technologies alongside classic OpenUI5 controls within a single application setup.
+This sample project demonstrates the seamless integration of [UI5 Web Components](https://github.com/SAP/ui5-webcomponents) into the [OpenUI5](https://github.com/SAP/openui5) framework showing AI use cases. The goal is to showcase how modern UI5 Web Components can be used alongside classic OpenUI5 controls within a single application, enabling developers to take advantage of AI use cases as per design guidelines.
 
-While focusing on conceptual AI scenarios, developers can investigate best practices for integrating UI5 Web Components in OpenUI5 views, ensuring interoperability and showcasing the possibilities of modern SAP Fiori applications. This exploration serves as a foundation for future enhancements with intelligent, reusable, standards-based UI elements that pave the way for enriched and personalized user experiences.
+By using this sample, you can explore best practices for embedding UI5 Web Components in OpenUI5 views, handling interoperability, and leveraging the strengths of both frameworks. It demonstrates AI Button component, AI Acknowledgment Pattern & AI Quick Prompt Pattern.
 
 ## Requirements
 Either [npm](https://www.npmjs.com/), [yarn](https://yarnpkg.com/), or [pnpm](https://pnpm.io/) for dependency management.
