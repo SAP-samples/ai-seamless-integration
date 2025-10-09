@@ -29,7 +29,7 @@ export default class App extends BaseController {
 	/**
 	 * Called when the controller is instantiated.
 	 */
-	async onInit() {
+	onInit() {
 		this.applyContentDensity();
 		this.initViewModel();
 	}

@@ -25,6 +25,10 @@
 /* End notifications */
 
 /* AI Acknowledgements  Dialog*/
+.aiIntegrationAcknowledgementDialog {
+	max-width: 50rem;
+}
+
 .aiIntegrationAcknowledgementDialog::part(content) {
 	padding: 0;
 }
@@ -34,7 +38,8 @@
 	justify-content: flex-end;
 	align-items: center;
 	gap: 0.25rem;
-	padding: 0.25rem;
+	padding-top: 0.25rem;
+	padding-bottom: 0.25rem;
 }
 
 /* End AI Acknowledgements Dialog */

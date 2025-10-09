@@ -29,15 +29,12 @@
 					<VBox class="sapUiSmallMargin">
 						<webc:Dialog id="acknowledgementDialog" class="aiIntegrationAcknowledgementDialog" open="true" headerText="AI Acknowledgement" >
 							<l:VerticalLayout class="sapUiResponsiveContentPadding">
-								<webc:Text text="[ &lt;Application Help&gt; ] now provides embedded AI (&quot;Artificial Intelligence&quot;) services. For more information, see"/>
-								<webc:Link href="https://www.sap.com" text="&lt;link&gt;"></webc:Link>
+								<webc:Text text="SAP CX AI Toolkit now provides embedded AI services. For more information, see SAP Help product overview."/>
 								<webc:Title level="H5" text="Disclaimer"></webc:Title>
 								<webc:Text text="Artificial Intelligence (AI) generates results based on multiple sources. Outputs may contain errors and inaccuracies. Consider reviewing all generated results and adjust as necessary."></webc:Text>
-								<webc:CheckBox id="dontShowAgain" text="Don't show this message again"></webc:CheckBox>
 							</l:VerticalLayout>
 
 							<webc:footer>
-								<webc:Button id="okButton" design="Emphasized" click=".onDialogOkButton" text="OK" class="dialogCloser"></webc:Button>
 								<webc:Button id="cancelButton" text="Cancel" click=".onDialogCancelButton" class="dialogCloser"></webc:Button>
 							</webc:footer>
 						</webc:Dialog>
