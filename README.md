@@ -1,4 +1,4 @@
-# AI Seamless Integration
+# AI Seamless Integration Sample App
 [![REUSE status](https://api.reuse.software/badge/github.com/SAP-samples/ai-integration)](https://api.reuse.software/info/github.com/SAP-samples/ai-integration)
 
 ## Description
