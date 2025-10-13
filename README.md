@@ -1,5 +1,5 @@
 # AI Seamless Integration Sample App
-[![REUSE status](https://api.reuse.software/badge/github.com/SAP-samples/ai-integration)](https://api.reuse.software/info/github.com/SAP-samples/ai-integration)
+[![REUSE status](https://api.reuse.software/badge/github.com/SAP-samples/ai-seamless-integration)](https://api.reuse.software/info/github.com/SAP-samples/ai-seamless-integration)
 
 ## Description
 This sample project demonstrates the seamless integration of [UI5 Web Components](https://github.com/SAP/ui5-webcomponents) into the [OpenUI5](https://github.com/SAP/openui5) framework showing AI use cases. The goal is to showcase how modern UI5 Web Components can be used alongside classic OpenUI5 controls within a single application, enabling developers to take advantage of AI use cases as per design guidelines.
