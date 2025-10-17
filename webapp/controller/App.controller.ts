@@ -44,7 +44,8 @@ export default class App extends BaseController {
 			outputValueState: ValueState.None,
 			outputEnabled: true,
 			buttonState: "generate",
-			sendButtonEnabled: true
+			sendButtonEnabled: true,
+			outputBusy: false
 		} as ViewModelData;
 
 		const model = new JSONModel(initialModelData);
@@ -87,12 +88,17 @@ export default class App extends BaseController {
 			case "":
 			case "generate":
 				this.viewModelData.buttonState = "generating";
+				this.viewModelData.outputBusy = true;
 				this.viewModelData.sendButtonEnabled = false;
 				this.startQuickPromptGeneration();
 				const keys = Object.keys(predefinedTexts[this.translationKey]);
 				const randomKey = keys[Math.floor(Math.random() * keys.length)];
 				this.currentTextKey = randomKey;
-				this.generateText(predefinedTexts[this.translationKey][randomKey]);
+				setTimeout(()=> {
+					this.generateText(predefinedTexts[this.translationKey][randomKey]);
+					this.viewModelData.outputBusy = false;
+					this.viewModel.updateBindings(true);
+				}, 1000)
 				break;
 			case "generating":
 				this.viewModelData.buttonState = "revise";
@@ -128,13 +134,12 @@ export default class App extends BaseController {
 		this.viewModelData.outputValue = "";
 		this.viewModel.updateBindings(true);
 
-		const words = text.split(" ");
+		const words = text.split("");
 		let currentWordIndex = 0;
 
 		this.generationId = setInterval(() => {
 			if (currentWordIndex < words.length) {
-
-				this.viewModelData.outputValue = `${this.viewModelData.outputValue}${words[currentWordIndex]} `;
+				this.viewModelData.outputValue = `${this.viewModelData.outputValue}${words[currentWordIndex]}`;
 				currentWordIndex++;
 				this.viewModelData.sendButtonEnabled = false;
 				this.viewModelData.outputEnabled = false;
@@ -147,7 +152,7 @@ export default class App extends BaseController {
 				this.viewModelData.outputEnabled = true;
 			}
 			this.viewModel.updateBindings(true);
-		}, 75);
+		}, 15);
 	}
 
 	stopQuickPromptGeneration(): void {

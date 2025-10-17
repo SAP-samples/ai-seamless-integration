@@ -53,6 +53,9 @@
 	align-self: flex-end;
 }
 
+.aiIntegrationCardBusyInidicator {
+	width: 100%;
+}
 .aiIntegrationCardTextArea {
 	height: 350px;
 }
