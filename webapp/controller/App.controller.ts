@@ -71,12 +71,12 @@ export default class App extends BaseController {
 
 	onDialogOkButton(): void {
 		const acknowledgementDialog = this.getView().byId("acknowledgementDialog") as unknown as Dialog;
-		acknowledgementDialog.setOpen(false)
+		acknowledgementDialog.setOpen(false);
 	}
 
 	onDialogCancelButton(): void {
 		const acknowledgementDialog = this.getView().byId("acknowledgementDialog") as unknown as Dialog;
-		acknowledgementDialog.setOpen(false)
+		acknowledgementDialog.setOpen(false);
 	}
 
 	aiQuickPromptButtonClickHandler(): void {
