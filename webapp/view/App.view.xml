@@ -68,7 +68,9 @@
 										<webcai:ButtonState name="revise" text="Revise" icon="ai" endIcon="navigation-down-arrow"></webcai:ButtonState>
 									</webcai:Button>
 								</VBox>
-								<webc:TextArea id="output" class="aiIntegrationCardTextArea" enabled="{appView>/outputEnabled}" valueState="{appView>/outputValueState}" value="{appView>/outputValue}"></webc:TextArea>
+								<webc:BusyIndicator class="aiIntegrationCardBusyInidicator" delay="0" active="{appView>/outputBusy}">
+								<webc:TextArea id="output" class="aiIntegrationCardTextArea" enabled="{appView>/outputEnabled}" busy="{appView>/outputBusy}" valueState="{appView>/outputValueState}" value="{appView>/outputValue}"></webc:TextArea>
+								</webc:BusyIndicator>
 							</VBox>
 								<VBox class="aiIntegrationQuickPromptCardFooter">
 									<webc:Button id="footerBtnSend" design="Emphasized" enabled="{appView>/sendButtonEnabled}" text="Send" click=".sendTextHandler"></webc:Button>
