@@ -38,8 +38,10 @@
 	justify-content: flex-end;
 	align-items: center;
 	gap: 0.25rem;
-	padding-top: 0.25rem;
-	padding-bottom: 0.25rem;
+}
+
+.aiDialogFooterLayout {
+	justify-content: center;
 }
 
 /* End AI Acknowledgements Dialog */

@@ -27,7 +27,7 @@
 
 				<tnt:mainContents>
 					<VBox class="sapUiSmallMargin">
-						<webc:Dialog id="acknowledgementDialog" class="aiIntegrationAcknowledgementDialog" open="true" headerText="AI Acknowledgement" >
+						<webc:Dialog id="acknowledgementDialog" class="aiIntegrationAcknowledgementDialog" state="Information" header-text="Information" open="true" headerText="AI Acknowledgement" >
 							<l:VerticalLayout class="sapUiResponsiveContentPadding">
 								<webc:Text text="SAP CX AI Toolkit now provides embedded AI services. For more information, see SAP Help product overview."/>
 								<webc:Title level="H5" text="Disclaimer"></webc:Title>
@@ -35,7 +35,9 @@
 							</l:VerticalLayout>
 
 							<webc:footer>
-								<webc:Button id="cancelButton" text="Close" click=".onDialogCancelButton" class="dialogCloser"></webc:Button>
+								<VBox class="aiDialogFooterLayout">
+									<webc:Button id="cancelButton" text="Close" click=".onDialogCancelButton" class="dialogCloser"></webc:Button>
+								</VBox>
 							</webc:footer>
 						</webc:Dialog>
 
