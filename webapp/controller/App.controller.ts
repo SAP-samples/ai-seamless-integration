@@ -95,7 +95,7 @@ export default class App extends BaseController {
 				const randomKey = keys[Math.floor(Math.random() * keys.length)];
 				this.currentTextKey = randomKey;
 				this.viewModel.updateBindings(true);
-				this.startThinkingProcess(this.generateText, predefinedTexts[this.translationKey][randomKey] )
+				this.startLoadingProcess(this.generateText, predefinedTexts[this.translationKey][randomKey] )
 				break;
 			case "generating":
 				this.viewModelData.buttonState = "revise";
@@ -231,10 +231,10 @@ export default class App extends BaseController {
 				const keys = Object.keys(predefinedTexts[this.translationKey]);
 				const randomKey = keys[Math.floor(Math.random() * keys.length)];
 				this.currentTextKey = randomKey;
-				this.startThinkingProcess(this.setStateAndGenerate, "generating", randomKey, predefinedTexts);
+				this.startLoadingProcess(this.setStateAndGenerate, "generating", randomKey, predefinedTexts);
 				break;
 			case "Make Bulleted List":
-				this.startThinkingProcess(this.startTextGeneration, "reviseGenerating", predefinedTextsBulleted);
+				this.startLoadingProcess(this.startTextGeneration, "reviseGenerating", predefinedTextsBulleted);
 				break;
 			case "Clear Error":
 				this.viewModelData.outputBusy = false;
@@ -242,7 +242,7 @@ export default class App extends BaseController {
 				this.clearValueState();
 				break;
 			case "Fix Spelling and Grammar":
-				this.startThinkingProcess(this.fixSpellingAndGrammar, predefinedTexts);
+				this.startLoadingProcess(this.fixSpellingAndGrammar, predefinedTexts);
 				break;
 			case "Generate Error":
 				this.viewModelData.outputBusy = false;
@@ -250,33 +250,33 @@ export default class App extends BaseController {
 				this.setNegativeValueState();
 				break;
 			case "Simplify":
-				this.startThinkingProcess(this.startTextGeneration, "reviseGenerating", predefinedTextsSimplified);
+				this.startLoadingProcess(this.startTextGeneration, "reviseGenerating", predefinedTextsSimplified);
 				break;
 			case "Expand":
-				this.startThinkingProcess(this.startTextGeneration, "reviseGenerating", predefinedTextsExpanded);
+				this.startLoadingProcess(this.startTextGeneration, "reviseGenerating", predefinedTextsExpanded);
 				break;
 			case "Rephrase":
-				this.startThinkingProcess(this.startTextGeneration, "reviseGenerating", predefinedTextsRephrased);
+				this.startLoadingProcess(this.startTextGeneration, "reviseGenerating", predefinedTextsRephrased);
 				break;
 			case "Summarize":
-				this.startThinkingProcess(this.startTextGeneration, "reviseGenerating", predefinedTextsSummarized);
+				this.startLoadingProcess(this.startTextGeneration, "reviseGenerating", predefinedTextsSummarized);
 				break;
 			case "Bulgarian":
 				this.translationKey = LanguageCode.BG;
-				this.startThinkingProcess(this.startTextGeneration, "reviseGenerating", predefinedTexts);
+				this.startLoadingProcess(this.startTextGeneration, "reviseGenerating", predefinedTexts);
 				break;
 			case "English":
 				this.translationKey = LanguageCode.EN;
-				this.startThinkingProcess(this.startTextGeneration, "reviseGenerating", predefinedTexts);
+				this.startLoadingProcess(this.startTextGeneration, "reviseGenerating", predefinedTexts);
 				break;
 			case "German":
 				this.translationKey = LanguageCode.DE;
-				this.startThinkingProcess(this.startTextGeneration, "reviseGenerating", predefinedTexts);
+				this.startLoadingProcess(this.startTextGeneration, "reviseGenerating", predefinedTexts);
 				break;
 		}
 	}
 
-	startThinkingProcess<TArgs extends unknown[]>(callback: (...args: TArgs)=> void, ...args: TArgs){
+	startLoadingProcess<TArgs extends unknown[]>(callback: (...args: TArgs)=> void, ...args: TArgs){
 		setTimeout(()=> {
 			callback.call(this, ...args);
 			this.viewModelData.outputBusy = false;
