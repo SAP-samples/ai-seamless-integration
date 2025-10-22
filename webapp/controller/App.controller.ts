@@ -44,8 +44,8 @@ export default class App extends BaseController {
 			outputValueState: ValueState.None,
 			outputEnabled: true,
 			buttonState: "generate",
-			sendButtonEnabled: true,
-			outputBusy: false
+			outputBusy: false,
+			sendButtonEnabled: true
 		} as ViewModelData;
 
 		const model = new JSONModel(initialModelData);
@@ -94,11 +94,8 @@ export default class App extends BaseController {
 				const keys = Object.keys(predefinedTexts[this.translationKey]);
 				const randomKey = keys[Math.floor(Math.random() * keys.length)];
 				this.currentTextKey = randomKey;
-				setTimeout(()=> {
-					this.generateText(predefinedTexts[this.translationKey][randomKey]);
-					this.viewModelData.outputBusy = false;
-					this.viewModel.updateBindings(true);
-				}, 1000)
+				this.viewModel.updateBindings(true);
+				this.startThinkingProcess(this.generateText, predefinedTexts[this.translationKey][randomKey] )
 				break;
 			case "generating":
 				this.viewModelData.buttonState = "revise";
@@ -226,50 +223,65 @@ export default class App extends BaseController {
 		const predefinedTextsSimplified = this.textObject.predefinedTextsSimplified;
 		const predefinedTextsSummarized = this.textObject.predefinedTextsSummarized;
 
+		this.viewModelData.outputBusy = true;
+		this.viewModel.updateBindings(true);
+
 		switch (event.getParameter("text")) {
 			case "Regenerate":
 				const keys = Object.keys(predefinedTexts[this.translationKey]);
 				const randomKey = keys[Math.floor(Math.random() * keys.length)];
 				this.currentTextKey = randomKey;
-				this.setStateAndGenerate("generating", randomKey, predefinedTexts);
+				this.startThinkingProcess(this.setStateAndGenerate, "generating", randomKey, predefinedTexts);
 				break;
 			case "Make Bulleted List":
-				this.startTextGeneration("reviseGenerating", predefinedTextsBulleted);
+				this.startThinkingProcess(this.startTextGeneration, "reviseGenerating", predefinedTextsBulleted);
 				break;
 			case "Clear Error":
+				this.viewModelData.outputBusy = false;
+				this.viewModel.updateBindings(true);
 				this.clearValueState();
 				break;
 			case "Fix Spelling and Grammar":
-				this.fixSpellingAndGrammar(predefinedTexts);
+				this.startThinkingProcess(this.fixSpellingAndGrammar, predefinedTexts);
 				break;
 			case "Generate Error":
+				this.viewModelData.outputBusy = false;
+				this.viewModel.updateBindings(true);
 				this.setNegativeValueState();
 				break;
 			case "Simplify":
-				this.startTextGeneration("reviseGenerating", predefinedTextsSimplified);
+				this.startThinkingProcess(this.startTextGeneration, "reviseGenerating", predefinedTextsSimplified);
 				break;
 			case "Expand":
-				this.startTextGeneration("reviseGenerating", predefinedTextsExpanded);
+				this.startThinkingProcess(this.startTextGeneration, "reviseGenerating", predefinedTextsExpanded);
 				break;
 			case "Rephrase":
-				this.startTextGeneration("reviseGenerating", predefinedTextsRephrased);
+				this.startThinkingProcess(this.startTextGeneration, "reviseGenerating", predefinedTextsRephrased);
 				break;
 			case "Summarize":
-				this.startTextGeneration("reviseGenerating", predefinedTextsSummarized);
+				this.startThinkingProcess(this.startTextGeneration, "reviseGenerating", predefinedTextsSummarized);
 				break;
 			case "Bulgarian":
 				this.translationKey = LanguageCode.BG;
-				this.startTextGeneration("reviseGenerating", predefinedTexts);
+				this.startThinkingProcess(this.startTextGeneration, "reviseGenerating", predefinedTexts);
 				break;
 			case "English":
 				this.translationKey = LanguageCode.EN;
-				this.startTextGeneration("reviseGenerating", predefinedTexts);
+				this.startThinkingProcess(this.startTextGeneration, "reviseGenerating", predefinedTexts);
 				break;
 			case "German":
 				this.translationKey = LanguageCode.DE;
-				this.startTextGeneration("reviseGenerating", predefinedTexts);
+				this.startThinkingProcess(this.startTextGeneration, "reviseGenerating", predefinedTexts);
 				break;
 		}
+	}
+
+	startThinkingProcess<TArgs extends unknown[]>(callback: (...args: TArgs)=> void, ...args: TArgs){
+		setTimeout(()=> {
+			callback.call(this, ...args);
+			this.viewModelData.outputBusy = false;
+			this.viewModel.updateBindings(true);
+		}, 1000);
 	}
 
 	sendTextHandler():void {

@@ -21,6 +21,7 @@ interface ViewModelData {
 	outputValueState: ValueState,
 	outputEnabled: boolean,
 	buttonState: string,
+	outputBusy: boolean,
 	sendButtonEnabled: boolean
 }
 
