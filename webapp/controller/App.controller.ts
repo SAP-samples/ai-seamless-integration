@@ -8,7 +8,7 @@ import type Dialog from "@ui5/webcomponents/dist/Dialog";
 import {ValueState} from "sap/ui/core/library";
 import type Toast from "@ui5/webcomponents/dist/Toast";
 import type Menu from "@ui5/webcomponents/dist/Menu";
-import type { MenuItemClickEventDetail } from "@ui5/webcomponents/dist/Menu";
+import Event from "sap/ui/base/Event";
 import type WebCAIButton from "@ui5/webcomponents-ai/dist/Button";
 import LanguageCode from "../model/LanguageCode";
 
@@ -215,7 +215,7 @@ export default class App extends BaseController {
 			&& outputValue.trim() !== predefinedTextsSimplified[this.translationKey][this.currentTextKey];
 	}
 
-	reviseMenuItemClickHandler(event: CustomEvent<MenuItemClickEventDetail>):void {
+	reviseMenuItemClickHandler(event: Event<{ text: string }>):void {
 		const predefinedTexts = this.textObject.predefinedTexts;
 		const predefinedTextsBulleted = this.textObject.predefinedTextsBulleted;
 		const predefinedTextsExpanded = this.textObject.predefinedTextsExpanded;
@@ -226,7 +226,7 @@ export default class App extends BaseController {
 		this.viewModelData.outputBusy = true;
 		this.viewModel.updateBindings(true);
 
-		switch (event.detail?.text) {
+		switch (event.getParameter("text")) {
 			case "Regenerate":
 				const keys = Object.keys(predefinedTexts[this.translationKey]);
 				const randomKey = keys[Math.floor(Math.random() * keys.length)];
