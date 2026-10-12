@@ -27,16 +27,21 @@
 
 				<tnt:mainContents>
 					<VBox class="sapUiSmallMargin">
-						<webc:Dialog id="acknowledgementDialog" class="aiIntegrationAcknowledgementDialog" state="Information" header-text="Information" open="true" headerText="AI Acknowledgement" >
+						<webc:Dialog id="acknowledgementDialog"
+							class="aiIntegrationAcknowledgementDialog" state="Information"
+							open="true" headerText="AI Acknowledgement">
 							<l:VerticalLayout class="sapUiResponsiveContentPadding">
-								<webc:Text text="SAP CX AI Toolkit now provides embedded AI services. For more information, see SAP Help product overview."/>
+								<webc:Text
+									text="SAP CX AI Toolkit now provides embedded AI services. For more information, see SAP Help product overview." />
 								<webc:Title level="H5" text="Disclaimer"></webc:Title>
-								<webc:Text text="Artificial Intelligence (AI) generates results based on multiple sources. Outputs may contain errors and inaccuracies. Consider reviewing all generated results and adjust as necessary."></webc:Text>
+								<webc:Text
+									text="Artificial Intelligence (AI) generates results based on multiple sources. Outputs may contain errors and inaccuracies. Consider reviewing all generated results and adjust as necessary."></webc:Text>
 							</l:VerticalLayout>
 
 							<webc:footer>
 								<VBox class="aiDialogFooterLayout">
-									<webc:Button id="cancelButton" text="Close" click=".onDialogCancelButton" class="dialogCloser"></webc:Button>
+									<webc:Button id="cancelButton" text="Close"
+										click=".onDialogCancelButton" class="dialogCloser"></webc:Button>
 								</VBox>
 							</webc:footer>
 						</webc:Dialog>
@@ -45,61 +50,85 @@
 							<webc:header>
 								<webc:CardHeader
 									titleText="Michael Adams"
-									subtitle-text="Senior Sales Executive"
+									subtitleText="Senior Sales Executive"
 								>
 									<webc:avatar>
-										<Image src="https://ui5.github.io/webcomponents/images/avatars/man_avatar_1.png" slot="avatar" alt="avatar"/>
+										<Image
+											src="https://ui5.github.io/webcomponents/images/avatars/man_avatar_1.png"
+											alt="avatar" />
 									</webc:avatar>
 								</webc:CardHeader>
 							</webc:header>
 							<VBox class="aiIntegrationQuickPromptSection">
-								<webc:Label required="true" text="To:"/>
+								<webc:Label required="true" text="To:" />
+								<webcai:Input
+									id="dlGroupInput"
+									class="aiIntegrationDlGroupInput"
+									placeholder="Enter DL group e.g. 'DL Marketing' and press the AI icon"
+									showClearIcon="true"
+									itemClick=".onAiInputActionClick">
+									<webcai:actions>
+										<webc:MenuItem text="Generate"></webc:MenuItem>
+									</webcai:actions>
+								</webcai:Input>
 								<VBox class="aiIntegrationTokenContainer">
-									<HBox>
-										<webc:Token class="aiIntegrationTokenText" selected="true" text="Diana Mihaylova" ></webc:Token>
-										<webc:Token class="aiIntegrationTokenText" selected="true" text="DL Marketing Sector SAP" ></webc:Token>
+									<HBox items="{appView>/recipients}" wrap="Wrap">
+										<webc:Token class="aiIntegrationTokenText" selected="true"
+											text="{appView>text}"></webc:Token>
 									</HBox>
 								</VBox>
 
-								<VBox class="aiIntegrationQuickPromptLblBtn">
-									<webc:Label class="aiIntegrationCardButton" required="true" text="Offer:"/>
-									<webcai:Button id="quickPromptButton" class="aiIntegrationQuickPromptAiButton" state="{appView>/buttonState}" click=".aiQuickPromptButtonClickHandler">
+								<HBox justifyContent="SpaceBetween">
+									<webc:Input id="subject" value="{appView>/subject}" placeholder="Generate subject" width="420px" readonly="true"/>
+									<webcai:Button id="quickPromptButton"
+										class="aiIntegrationQuickPromptAiButton"
+										state="{appView>/buttonState}"
+										click=".aiQuickPromptButtonClickHandler">
 										<webcai:ButtonState name="generate" text="Generate" icon="ai"></webcai:ButtonState>
-										<webcai:ButtonState name="generating" text="Stop Generating" icon="stop"></webcai:ButtonState>
-										<webcai:ButtonState name="reviseGenerating" text="Stop Generating" icon="stop"></webcai:ButtonState>
-										<webcai:ButtonState name="revise" text="Revise" icon="ai" endIcon="navigation-down-arrow"></webcai:ButtonState>
+										<webcai:ButtonState name="generating" text="Stop Generating"
+											icon="stop"></webcai:ButtonState>
+										<webcai:ButtonState name="reviseGenerating"
+											text="Stop Generating" icon="stop"></webcai:ButtonState>
+										<webcai:ButtonState name="revise" text="Revise" icon="ai"
+											endIcon="navigation-down-arrow"></webcai:ButtonState>
 									</webcai:Button>
-								</VBox>
-								<webc:BusyIndicator class="aiIntegrationCardBusyInidicator" delay="0" active="{appView>/outputBusy}">
-								<webc:TextArea id="output" class="aiIntegrationCardTextArea" enabled="{appView>/outputEnabled}" busy="{appView>/outputBusy}" valueState="{appView>/outputValueState}" value="{appView>/outputValue}"></webc:TextArea>
-								</webc:BusyIndicator>
+								</HBox>
+								<webc:Menu id="subjectMenu" itemClick=".onSubjectMenuItemClick">
+									<webc:MenuItem text="Regenerate"></webc:MenuItem>
+									<webc:MenuItem text="Spellcheck"></webc:MenuItem>
+								</webc:Menu>
+								<webc:Label class="aiIntegrationCardButton" required="true"
+									text="Offer:" />
+								<webcai:TextArea
+									placeholder="Enter some text"
+									id="output"
+									rows="8"
+									width="500px"
+									loading="{appView>/outputLoading}"
+									currentVersion="{appView>/outputCurrentVersion}"
+									totalVersions="{appView>/outputTotalVersions}"
+									promptDescription="{appView>/outputPromptDescription}"
+									versionChange=".onVersionChange"
+									stopGeneration=".onStopGeneration">
+									<webcai:menu>
+										<webc:Menu id="aiMenu" itemClick=".onAiMenuItemClick">
+											<webc:MenuItem text="Generate"></webc:MenuItem>
+											<webc:MenuItem text="Regenerate"></webc:MenuItem>
+											<webc:MenuItem text="Spellcheck"></webc:MenuItem>
+										</webc:Menu>
+									</webcai:menu>
+								</webcai:TextArea>
 							</VBox>
-								<VBox class="aiIntegrationQuickPromptCardFooter">
-									<webc:Button id="footerBtnSend" design="Emphasized" enabled="{appView>/sendButtonEnabled}" text="Send" click=".sendTextHandler"></webc:Button>
-									<webc:Button id="footerBtnCancel" design="Transparent" text="Cancel" click=".onCancelClick"></webc:Button>
-								</VBox>
-							<webc:Toast id="quickPromptToast" placement="MiddleCenter" duration="3000" text="Your message was sent successfully!"></webc:Toast>
+							<VBox class="aiIntegrationQuickPromptCardFooter">
+								<webc:Button id="footerBtnSend" design="Emphasized"
+									enabled="{appView>/sendButtonEnabled}" text="Send"
+									click=".sendTextHandler"></webc:Button>
+								<webc:Button id="footerBtnCancel" design="Transparent" text="Cancel"
+									click=".onCancelClick"></webc:Button>
+							</VBox>
+							<webc:Toast id="quickPromptToast" placement="MiddleCenter"
+								duration="3000" text="Your message was sent successfully!"></webc:Toast>
 						</webc:Card>
-						<webc:Menu id="reviseMenu" horizontalAlign="End" itemClick=".reviseMenuItemClickHandler">
-							<webc:MenuItem text="Regenerate"></webc:MenuItem>
-							<webc:MenuSeparator></webc:MenuSeparator>
-							<webc:MenuItem text="Fix Spelling and Grammar"></webc:MenuItem>
-							<webc:MenuItem text="Rewrite Text">
-								<webc:MenuItem text="Simplify"></webc:MenuItem>
-								<webc:MenuItem text="Expand"></webc:MenuItem>
-								<webc:MenuItem text="Rephrase"></webc:MenuItem>
-								<webc:MenuItem text="Summarize"></webc:MenuItem>
-							</webc:MenuItem>
-							<webc:MenuItem text="Make Bulleted List"></webc:MenuItem>
-							<webc:MenuItem text="Translate">
-								<webc:MenuItem text="Bulgarian"></webc:MenuItem>
-								<webc:MenuItem text="English"></webc:MenuItem>
-								<webc:MenuItem text="German"></webc:MenuItem>
-							</webc:MenuItem>
-							<webc:MenuSeparator></webc:MenuSeparator>
-							<webc:MenuItem text="Generate Error"></webc:MenuItem>
-							<webc:MenuItem text="Clear Error"></webc:MenuItem>
-						</webc:Menu>
 					</VBox>
 				</tnt:mainContents>
 			</tnt:ToolPage>

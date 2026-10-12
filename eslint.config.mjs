@@ -23,6 +23,14 @@ export default tseslint.config(
 		}
 	},
 	{
+		rules: {
+			"@typescript-eslint/no-unused-vars": [
+				"error",
+				{ argsIgnorePattern: "^_", varsIgnorePattern: "^_" }
+			]
+		}
+	},
+	{
 		ignores: ["eslint.config.mjs", "webapp/test/e2e/**"]
 	}
 );
