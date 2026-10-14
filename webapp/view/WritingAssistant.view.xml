@@ -1,0 +1,97 @@
+<mvc:View
+	controllerName="ai.integration.controller.WritingAssistant"
+	displayBlock="true"
+	xmlns="sap.m"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:core="sap.ui.core"
+	xmlns:webcai="@ui5/webcomponents-ai/dist"
+	xmlns:webc="@ui5/webcomponents/dist"
+	core:require="{
+        iconAI: '@ui5/webcomponents-icons/ai',
+        iconStop: '@ui5/webcomponents-icons/stop',
+		iconNavigationDownArrow: '@ui5/webcomponents-icons/navigation-down-arrow'
+    }">
+	<webc:Card class="aiIntegrationCard">
+		<webc:header>
+			<webc:CardHeader
+				titleText="Michael Adams"
+				subtitleText="Senior Sales Executive"
+			>
+				<webc:avatar>
+					<Image
+						src="https://ui5.github.io/webcomponents/images/avatars/man_avatar_1.png"
+						alt="avatar" />
+				</webc:avatar>
+			</webc:CardHeader>
+		</webc:header>
+		<VBox class="aiIntegrationQuickPromptSection">
+			<webc:Label required="true" text="To:" />
+			<webcai:Input
+				id="dlGroupInput"
+				class="aiIntegrationDlGroupInput"
+				placeholder="Enter DL group e.g. 'DL Marketing' and press the AI icon"
+				showClearIcon="true"
+				itemClick=".onAiInputActionClick">
+				<webcai:actions>
+					<webc:MenuItem text="Generate"></webc:MenuItem>
+				</webcai:actions>
+			</webcai:Input>
+			<VBox class="aiIntegrationTokenContainer">
+				<HBox items="{appView>/recipients}" wrap="Wrap">
+					<webc:Token class="aiIntegrationTokenText" selected="true"
+						text="{appView>text}"></webc:Token>
+				</HBox>
+			</VBox>
+
+			<HBox justifyContent="SpaceBetween">
+				<webc:Input id="subject" value="{appView>/subject}" placeholder="Generate subject" width="420px" readonly="true"/>
+				<webcai:Button id="quickPromptButton"
+					class="aiIntegrationQuickPromptAiButton"
+					state="{appView>/buttonState}"
+					click=".aiQuickPromptButtonClickHandler">
+					<webcai:ButtonState name="generate" text="Generate" icon="ai"></webcai:ButtonState>
+					<webcai:ButtonState name="generating" text="Stop Generating"
+						icon="stop"></webcai:ButtonState>
+					<webcai:ButtonState name="reviseGenerating"
+						text="Stop Generating" icon="stop"></webcai:ButtonState>
+					<webcai:ButtonState name="revise" text="Revise" icon="ai"
+						endIcon="navigation-down-arrow"></webcai:ButtonState>
+				</webcai:Button>
+			</HBox>
+			<webc:Menu id="subjectMenu" itemClick=".onSubjectMenuItemClick">
+				<webc:MenuItem text="Regenerate"></webc:MenuItem>
+				<webc:MenuItem text="Spellcheck"></webc:MenuItem>
+			</webc:Menu>
+			<webc:Label class="aiIntegrationCardButton" required="true"
+				text="Offer:" />
+			<webcai:TextArea
+				placeholder="Enter some text"
+				id="output"
+				rows="8"
+				width="500px"
+				loading="{appView>/outputLoading}"
+				currentVersion="{appView>/outputCurrentVersion}"
+				totalVersions="{appView>/outputTotalVersions}"
+				promptDescription="{appView>/outputPromptDescription}"
+				versionChange=".onVersionChange"
+				stopGeneration=".onStopGeneration">
+				<webcai:menu>
+					<webc:Menu id="aiMenu" itemClick=".onAiMenuItemClick">
+						<webc:MenuItem text="Generate"></webc:MenuItem>
+						<webc:MenuItem text="Regenerate"></webc:MenuItem>
+						<webc:MenuItem text="Spellcheck"></webc:MenuItem>
+					</webc:Menu>
+				</webcai:menu>
+			</webcai:TextArea>
+		</VBox>
+		<VBox class="aiIntegrationQuickPromptCardFooter">
+			<webc:Button id="footerBtnSend" design="Emphasized"
+				enabled="{appView>/sendButtonEnabled}" text="Send"
+				click=".sendTextHandler"></webc:Button>
+			<webc:Button id="footerBtnCancel" design="Transparent" text="Cancel"
+				click=".onCancelClick"></webc:Button>
+		</VBox>
+		<webc:Toast id="quickPromptToast" placement="MiddleCenter"
+			duration="3000" text="Your message was sent successfully!"></webc:Toast>
+	</webc:Card>
+</mvc:View>

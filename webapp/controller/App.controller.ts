@@ -10,6 +10,8 @@ import type Toast from "@ui5/webcomponents/dist/Toast";
 import type Menu from "@ui5/webcomponents/dist/Menu";
 import Event from "sap/ui/base/Event";
 import type WebCAIButton from "@ui5/webcomponents-ai/dist/Button";
+import type SplitApp from "sap/m/SplitApp";
+import type Control from "sap/ui/core/Control";
 import LanguageCode from "../model/LanguageCode";
 
 
@@ -67,6 +69,18 @@ export default class App extends BaseController {
 	 */
 	applyContentDensity(): void {
 		this.getView().addStyleClass(this.getOwnerComponent().getContentDensityClass());
+	}
+
+	/**
+	 * Navigates the SplitApp detail area to the page referenced by the selected
+	 * master-list item (via its "target" custom data).
+	 */
+	onNavItemPress(event: Event<{ listItem: Control }>): void {
+		const item = event.getParameter("listItem") as unknown as { data(key: string): string };
+		const target = item.data("target");
+		const splitApp = this.getView().byId("splitApp") as unknown as SplitApp;
+		const page = this.getView().byId(target) as unknown as Control;
+		splitApp.toDetail(page.getId(), "show");
 	}
 
 	onDialogOkButton(): void {

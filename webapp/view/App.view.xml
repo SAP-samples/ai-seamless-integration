@@ -15,7 +15,25 @@
 		iconNavigationDownArrow: '@ui5/webcomponents-icons/navigation-down-arrow'
     }">
 	<App id="app">
-		<Page id="toolPageWrapper" showHeader="false">
+		<SplitApp id="splitApp">
+			<masterPages>
+				<Page id="masterPage" title="Seamless AI Integration">
+					<List id="navList" mode="SingleSelectMaster" selectionChange=".onNavItemPress">
+						<StandardListItem title="AI Toolkit" icon="sap-icon://email" type="Active">
+							<customData>
+								<core:CustomData key="target" value="toolPageWrapper" />
+							</customData>
+						</StandardListItem>
+						<StandardListItem title="Writing Assistant" icon="sap-icon://edit" type="Active">
+							<customData>
+								<core:CustomData key="target" value="writingAssistantPage" />
+							</customData>
+						</StandardListItem>
+					</List>
+				</Page>
+			</masterPages>
+			<detailPages>
+				<Page id="toolPageWrapper" showHeader="false">
 			<tnt:ToolPage id="toolPage">
 				<tnt:header>
 					<webcf:ShellBar primaryTitle="Seamless AI Integration">
@@ -103,6 +121,11 @@
 					</VBox>
 				</tnt:mainContents>
 			</tnt:ToolPage>
-		</Page>
+				</Page>
+				<Page id="writingAssistantPage" title="Writing Assistant" class="sapUiContentPadding">
+					<mvc:XMLView viewName="ai.integration.view.WritingAssistant" />
+				</Page>
+			</detailPages>
+		</SplitApp>
 	</App>
 </mvc:View>
